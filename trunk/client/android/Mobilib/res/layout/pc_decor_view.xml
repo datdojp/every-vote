@@ -1,0 +1,13 @@
+<jp.co.mobilus.mobilib.PcDecorView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#00000000" >
+
+    <FrameLayout
+        android:id="@+id/pc_inapp_popup_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#88000000"
+        android:visibility="gone" />
+
+</jp.co.mobilus.mobilib.PcDecorView>
