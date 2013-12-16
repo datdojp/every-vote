@@ -1,8 +1,7 @@
 package jp.co.mobilus.mobilib.util;
 
-import android.os.AsyncTask;
 
-public abstract class ControllableAsyncTask extends AsyncTask<Void, Void, Void> {
+public abstract class MlControllableAsyncTask extends MlAsyncTask {
     
     public void cancel() {
         super.cancel(true);
@@ -11,14 +10,14 @@ public abstract class ControllableAsyncTask extends AsyncTask<Void, Void, Void> 
 
     protected void handleCancel() {}
 
-    public abstract static class Controller {
+    public abstract static class MlController {
 
-        private ControllableAsyncTask mAsyncTask;
+        private MlControllableAsyncTask mAsyncTask;
 
-        protected abstract ControllableAsyncTask generate();
+        protected abstract MlControllableAsyncTask generate();
 
-        public Controller execute() {
-            Utils.executeOnMainThread(new Runnable() {
+        public MlController execute() {
+            MlInternal.executeOnMainThread(new Runnable() {
                 @Override
                 public void run() {
                     mAsyncTask = generate();
@@ -28,7 +27,7 @@ public abstract class ControllableAsyncTask extends AsyncTask<Void, Void, Void> 
             return this;
         }
 
-        public Controller cancel() {
+        public MlController cancel() {
             if (mAsyncTask != null) {
                 mAsyncTask.cancel();
             }

@@ -23,8 +23,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-public abstract class PcImageLoader<T> {
-    private static final String TAG = PcUtils.getTag(PcImageLoader.class);
+public abstract class MlImageLoader<T> {
+    private static final String TAG = MlUtils.getTag(MlImageLoader.class);
     private static final int DEFAULT_CACHE_SIZE = 2 * 1024 * 1024; // 2MB
     private static final String CACHE_KEY_SEPARATOR = "#";
 
@@ -67,7 +67,7 @@ public abstract class PcImageLoader<T> {
     private static final Set<WeakReference<ImageView>> mLoadedImageViews = new HashSet<WeakReference<ImageView>>();
     private static void initCacheIfNeeded() {
         if (mStringPictureLruCache == null) {
-            Context context = PcInternal.getInstance() != null ? PcInternal.getInstance().getCurrentContext() : null;
+            Context context = MlInternal.getInstance() != null ? MlInternal.getInstance().getCurrentContext() : null;
             int cacheSize = DEFAULT_CACHE_SIZE;
             if (context != null) {
                 ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
@@ -178,11 +178,11 @@ public abstract class PcImageLoader<T> {
         }
     }
 
-    public PcImageLoader() {
+    public MlImageLoader() {
         this(PcImageLoaderLoadOrder.FIRST_TO_LAST);
     }
 
-    public PcImageLoader(PcImageLoaderLoadOrder loadOrder) {
+    public MlImageLoader(PcImageLoaderLoadOrder loadOrder) {
         mLoadOrder = loadOrder;
     }
 
@@ -308,13 +308,13 @@ public abstract class PcImageLoader<T> {
                 if (bmData == null || bmData.length == 0) {
                     handleBadReturnedBitmap(item);
                 } else {
-                    new PcAsyncTask() {
+                    new MlAsyncTask() {
                         @Override
                         protected Void doInBackground(Void... params) {
                             try {
                                 Bitmap bm;
                                 if (getImageWidth() > 0 || getImageHeight() > 0) {
-                                    bm = PcUtils.loadBitmapMatchSpecifiedSize(getImageWidth(), getImageHeight(), bmData);
+                                    bm = MlUtils.loadBitmapMatchSpecifiedSize(getImageWidth(), getImageHeight(), bmData);
                                 } else {
                                     bm = BitmapFactory.decodeByteArray(bmData, 0, bmData.length);
                                 }
@@ -425,7 +425,7 @@ public abstract class PcImageLoader<T> {
             final String path,
             final ImageView target) {
 
-        if (PcUtils.isEmpty(path)) return false;
+        if (MlUtils.isEmpty(path)) return false;
         String key = getInternalStorageKey(path);
         Bitmap bm = (Bitmap) get(key);
         if (bm != null) {
@@ -463,7 +463,7 @@ public abstract class PcImageLoader<T> {
     }
 
     public synchronized static boolean releaseInternalImage(Context context, String path) {
-        if (PcUtils.isEmpty(path)) return false;
+        if (MlUtils.isEmpty(path)) return false;
         String key = getInternalStorageKey(path);
         remove(key);
         return true;

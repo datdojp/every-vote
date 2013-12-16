@@ -5,7 +5,7 @@ import android.os.Handler;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
-public class PcSequenceImage extends ImageView {
+public class MlSequenceImage extends ImageView {
     private int mCurrentIndex;
     private int[] mImageResIds;
     private long mInterval;
@@ -22,15 +22,15 @@ public class PcSequenceImage extends ImageView {
         }
     };
 
-    public PcSequenceImage(Context context) {
+    public MlSequenceImage(Context context) {
         super(context);
     }
 
-    public PcSequenceImage(Context context, AttributeSet attrs) {
+    public MlSequenceImage(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public PcSequenceImage(Context context, AttributeSet attrs, int defStyle) {
+    public MlSequenceImage(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 

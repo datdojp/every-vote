@@ -1,7 +1,7 @@
 package jp.co.mobilus.mobilib.widget;
 
-import jp.co.pokelabo.pokechat.R;
-import jp.co.pokelabo.pokechat.util.PcUtils;
+import jp.co.mobilus.mobilib.R;
+import jp.co.mobilus.mobilib.util.MlUtils;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -14,20 +14,20 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 
-public class PcCornerRoundableFrameLayout extends FrameLayout {
+public class MlCornerRoundableFrameLayout extends FrameLayout {
     private int mCornerRadius;
     private Path mClipPath;
 
-    public PcCornerRoundableFrameLayout(Context context) {
+    public MlCornerRoundableFrameLayout(Context context) {
         super(context);
     }
 
-    public PcCornerRoundableFrameLayout(Context context, AttributeSet attrs) {
+    public MlCornerRoundableFrameLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
     }
 
-    public PcCornerRoundableFrameLayout(Context context, AttributeSet attrs, int defStyle) {
+    public MlCornerRoundableFrameLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init(context, attrs);
     }
@@ -35,9 +35,9 @@ public class PcCornerRoundableFrameLayout extends FrameLayout {
     @SuppressLint("NewApi")
     private void init(Context context, AttributeSet attrs) {
         TypedArray ta = context.getTheme().obtainStyledAttributes(
-                attrs, R.styleable.PcCornerRoundableFrameLayout, 0, 0);
-        int cornerRadius = ta.getInt(R.styleable.PcCornerRoundableFrameLayout_cornerRadius, 0);
-        mCornerRadius = PcUtils.pxFromDp(cornerRadius);
+                attrs, R.styleable.MlCornerRoundableFrameLayout, 0, 0);
+        int cornerRadius = ta.getInt(R.styleable.MlCornerRoundableFrameLayout_cornerRadius, 0);
+        mCornerRadius = MlUtils.pxFromDp(cornerRadius);
 
         if (Build.VERSION.SDK_INT >= 11) {
             setLayerType(View.LAYER_TYPE_SOFTWARE, null);

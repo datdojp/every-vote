@@ -14,11 +14,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import jp.co.pokelabo.pokechat.PcWebActivity;
-import jp.co.pokelabo.pokechat.R;
 
 import org.json.JSONArray;
 
@@ -55,7 +51,6 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -63,15 +58,13 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
-import com.github.johnpersano.supertoasts.SuperToast;
-
-public class PcUtils {
-    private static final String TAG = getTag(PcUtils.class);
+public class MlUtils {
+    private static final String TAG = getTag(MlUtils.class);
     private static float density = 0;
     private static final String EMAIL_TYPE = "message/rfc822";
 
     public static void hideKeyboard() {
-        Activity activity = (Activity) PcInternal.getInstance().getCurrentContext();
+        Activity activity = (Activity) MlInternal.getInstance().getCurrentContext();
         View currentFocusedView = activity.getCurrentFocus();
         if (currentFocusedView != null) {
             InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -86,7 +79,7 @@ public class PcUtils {
 
     public static int pxFromDp(int dp) {
         if (density == 0) {
-            density = PcInternal.getInstance().getCurrentContext().getResources().getDisplayMetrics().density;
+            density = MlInternal.getInstance().getCurrentContext().getResources().getDisplayMetrics().density;
         }
         return (int) (dp * density);
     }
@@ -96,11 +89,11 @@ public class PcUtils {
     }
 
     public static boolean isPortraitDisplay() {
-        return PcInternal.getInstance().getCurrentContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
+        return MlInternal.getInstance().getCurrentContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
     }
 
     public static boolean isPortraitWindow() {
-        Activity activity = (Activity) PcInternal.getInstance().getCurrentContext();
+        Activity activity = (Activity) MlInternal.getInstance().getCurrentContext();
         View root = activity.getWindow().getDecorView();
         return root.getWidth() <= root.getHeight();
     }
@@ -112,7 +105,7 @@ public class PcUtils {
     }
 
     public static boolean isNetworkConnected() {
-        return isNetworkConnected(PcInternal.getInstance().getCurrentContext());
+        return isNetworkConnected(MlInternal.getInstance().getCurrentContext());
     }
 
     public static Bitmap loadBitmapMatchSpecifiedSize(final int targetW, final int targetH, final byte[] bmData) {
@@ -163,7 +156,7 @@ public class PcUtils {
     public static int[] getBitmapSizes(int resId) {
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeResource(PcInternal.getInstance().getCurrentContext().getResources(), resId, bmOptions);
+        BitmapFactory.decodeResource(MlInternal.getInstance().getCurrentContext().getResources(), resId, bmOptions);
         return new int[]{ bmOptions.outWidth, bmOptions.outHeight };
     }
 
@@ -285,7 +278,7 @@ public class PcUtils {
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     @SuppressWarnings("deprecation")
     public static int[] getDisplaySizes() {
-        Context context = PcInternal.getInstance().getCurrentContext();
+        Context context = MlInternal.getInstance().getCurrentContext();
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Display display = windowManager.getDefaultDisplay();
         if (Build.VERSION.SDK_INT < 13) {
@@ -339,7 +332,7 @@ public class PcUtils {
     }
 
     public static String getCacheAsbPath(String relativePath) {
-        File cacheDir = PcInternal.getInstance().getCurrentContext().getCacheDir();
+        File cacheDir = MlInternal.getInstance().getCurrentContext().getCacheDir();
         return cacheDir.getAbsolutePath().concat("/").concat(relativePath);
     }
 
@@ -376,44 +369,18 @@ public class PcUtils {
         return b;
     }
 
-    private static final int TOAST_LENGTH = 1000;
-    private static final int TOAST_ANIMATION_LENGTH = 500;
-    public static void showToast(final int messageResId) {
-        Runnable action = new Runnable() {
-            @Override
-            public void run() {
-                Context context = PcInternal.getInstance().getCurrentContext();
-                SuperToast toast = new SuperToast(context);
-                toast.setDuration(TOAST_LENGTH - TOAST_ANIMATION_LENGTH);
-                toast.setAnimation(SuperToast.ANIMATION_FADE);
-                toast.setBackgroundResource(R.drawable.pc_offline_background);
-                toast.setText(context.getString(messageResId));
-                toast.setTextColor(0xffffffff);
-                toast.setTextSize(16);
-                toast.setGravity(Gravity.CENTER);
-                toast.setXYCoordinates(0, 0);
-                toast.show();
-            }
-        };
-        if (isMainThread()) {
-            action.run();
-        } else {
-            PcInternal.getMainThread().post(action);
-        }
-    }
-
     public static void showAlert(final int titleResId, final int messageResId, final Runnable postTask) {
-        PcInternal.getMainThread().post(new Runnable() { 
+        MlInternal.getMainThread().post(new Runnable() { 
             @Override
             public void run() {
-                new AlertDialog.Builder(PcInternal.getInstance().getCurrentContext())
+                new AlertDialog.Builder(MlInternal.getInstance().getCurrentContext())
                 .setTitle(titleResId)
                 .setMessage(messageResId)
-                .setNegativeButton(R.string.pc_ok, new OnClickListener() {
+                .setNegativeButton(android.R.string.ok, new OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        if (postTask != null) PcInternal.getMainThread().post(postTask);
+                        if (postTask != null) MlInternal.getMainThread().post(postTask);
                     }
                 })
                 .show();
@@ -423,14 +390,11 @@ public class PcUtils {
 
     private static ProgressDialog sProgressDialog;
     private static int sProgressDialogCount;
-    public synchronized static void showProgressDialog() {
-        showProgressDialog(R.string.pc_wait);
-    }
     public synchronized static void showProgressDialog(final int messageResId) {
-        PcInternal.executeOnMainThread(new Runnable() {
+        MlInternal.executeOnMainThread(new Runnable() {
             @Override
             public void run() {
-                Context context = PcInternal.getInstance().getCurrentContext();
+                Context context = MlInternal.getInstance().getCurrentContext();
                 if (sProgressDialogCount == 0) {
                     sProgressDialog = new ProgressDialog(context);
                     sProgressDialog.setMessage(context.getString(messageResId));
@@ -443,7 +407,7 @@ public class PcUtils {
     }
 
     public synchronized static void hideProgressDialog() {
-        PcInternal.executeOnMainThread(new Runnable() {
+        MlInternal.executeOnMainThread(new Runnable() {
             @Override
             public void run() {
                 sProgressDialogCount--;
@@ -475,7 +439,7 @@ public class PcUtils {
         }
     }
 
-    public static void sendEmail(String subject, String[] emails, Object text, String title) {
+    public static boolean sendEmail(String subject, String[] emails, Object text, String title) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType(EMAIL_TYPE);
         intent.putExtra(Intent.EXTRA_SUBJECT, subject);
@@ -486,12 +450,13 @@ public class PcUtils {
             intent.putExtra(Intent.EXTRA_TEXT, (Spanned)text);
         }
         try {
-            PcInternal.getInstance().getCurrentContext()
+            MlInternal.getInstance().getCurrentContext()
             .startActivity(Intent.createChooser(intent, title));
         } catch (ActivityNotFoundException e) {
             Log.e(TAG, "Cannot send email", e);
-            PcUtils.showAlert(R.string.pc_error, R.string.pc_alert_send_email_failed, null);
+            return false;
         }
+        return true;
     }
 
     public static void copyAssetFiles(Context context, Pattern pattern) throws IOException {
@@ -556,33 +521,11 @@ public class PcUtils {
         return bm;
     }
 
-    public static void startHttpLink(String linkString, boolean isWebviewHavingFooter) {
-        linkString = lowerCaseHttpxPrefix(linkString);
-        Activity activity = (Activity) PcInternal.getInstance().getCurrentContext();
-        Intent intent = new Intent(activity, PcWebActivity.class);
-        intent.putExtra(PcWebActivity.EXTRA_KEY_HAS_FOOTER, isWebviewHavingFooter);
-        intent.putExtra(PcWebActivity.EXTRA_KEY_URL, linkString);
-        activity.startActivity(intent);
-    }
-
-    private static String lowerCaseHttpxPrefix(String linkString) {
-        Pattern pattern = Pattern.compile("(?i:http[s]?)");
-        Matcher m = pattern.matcher(linkString);
-        while (m.find()) {
-            String oldPrefix = m.group(0);
-            String newPrefix = (oldPrefix.length()==4)?"http":"https";
-            String lowerLinkString = linkString.replaceFirst(oldPrefix,newPrefix);
-            return lowerLinkString;
-        }
-        //Should never come here
-        return "";
-    }
-
     public static boolean isAppInstalled(String packageName) {
 
-        if (PcUtils.isEmpty(packageName)) return false;
+        if (MlUtils.isEmpty(packageName)) return false;
 
-        PackageManager pm = PcInternal.getInstance().getCurrentContext().getPackageManager();
+        PackageManager pm = MlInternal.getInstance().getCurrentContext().getPackageManager();
         try {
             pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
             return true;
@@ -596,16 +539,16 @@ public class PcUtils {
     @SuppressLint("NewApi")
     public static void copyTextToClipboard(String text) {
         if (Build.VERSION.SDK_INT < 11) {
-            android.text.ClipboardManager clipboard = (android.text.ClipboardManager) PcInternal.getInstance().getCurrentContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            android.text.ClipboardManager clipboard = (android.text.ClipboardManager) MlInternal.getInstance().getCurrentContext().getSystemService(Context.CLIPBOARD_SERVICE);
             clipboard.setText(text);
         } else {
-            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) PcInternal.getInstance().getCurrentContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) MlInternal.getInstance().getCurrentContext().getSystemService(Context.CLIPBOARD_SERVICE);
             clipboard.setPrimaryClip(ClipData.newPlainText("PoketChat Copy To Clipboard", text));
         }
     }
 
     public static void openApp(String packageName) {
-        Context context = PcInternal.getInstance().getCurrentContext();
+        Context context = MlInternal.getInstance().getCurrentContext();
         PackageManager manager = context.getPackageManager();
         Intent intent = manager.getLaunchIntentForPackage(packageName);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -614,7 +557,7 @@ public class PcUtils {
     }
 
     public static void openDownloadPage(String downloadUrl) {
-        Context context = PcInternal.getInstance().getCurrentContext();
+        Context context = MlInternal.getInstance().getCurrentContext();
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setData(Uri.parse(downloadUrl));
@@ -638,7 +581,7 @@ public class PcUtils {
     }
 
     public static void deleteInternalStorageFile(String path) {
-        Context context = PcInternal.getInstance().getCurrentContext();
+        Context context = MlInternal.getInstance().getCurrentContext();
         context.deleteFile(path);
     }
 

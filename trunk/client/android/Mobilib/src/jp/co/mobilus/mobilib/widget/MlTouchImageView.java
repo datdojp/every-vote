@@ -11,7 +11,7 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.ImageView;
 
-public class PcTouchImageView extends ImageView {
+public class MlTouchImageView extends ImageView {
 
     private static final int NONE = 0;
     private static final int DRAG = 1;
@@ -35,12 +35,12 @@ public class PcTouchImageView extends ImageView {
     private ScaleGestureDetector mScaleDetector;
     private OnTouchListener mExtraTouchListener;
 
-    public PcTouchImageView(Context context) {
+    public MlTouchImageView(Context context) {
         super(context);
         sharedConstructing(context);
     }
 
-    public PcTouchImageView(Context context, AttributeSet attrs) {
+    public MlTouchImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         sharedConstructing(context);
     }

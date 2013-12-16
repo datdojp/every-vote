@@ -1,6 +1,6 @@
 package jp.co.mobilus.mobilib.widget;
 
-import jp.co.pokelabo.pokechat.util.PcUtils;
+import jp.co.mobilus.mobilib.util.MlUtils;
 import junit.framework.Assert;
 import android.content.Context;
 import android.os.Handler;
@@ -16,7 +16,7 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.FrameLayout;
 import android.widget.Scroller;
 
-public class PcSideMenuEnabledLayout extends FrameLayout {
+public class MlSideMenuEnabledLayout extends FrameLayout {
     private static final int DEFAULT_HIDDEN_VIEW_MARGIN_IN_DP = 50;
     private static final int SCROLL_X_PER_Y_RATE_THRESHHOLD = 4;
 
@@ -52,15 +52,15 @@ public class PcSideMenuEnabledLayout extends FrameLayout {
     private Handler mMainThread = new Handler();
     private PcSideMenuEnabledLayoutDelegate mDelegate;
 
-    public PcSideMenuEnabledLayout(Context context) {
+    public MlSideMenuEnabledLayout(Context context) {
         super(context);
     }
 
-    public PcSideMenuEnabledLayout(Context context, AttributeSet attrs) {
+    public MlSideMenuEnabledLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public PcSideMenuEnabledLayout(Context context, AttributeSet attrs, int defStyle) {
+    public MlSideMenuEnabledLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
@@ -78,7 +78,7 @@ public class PcSideMenuEnabledLayout extends FrameLayout {
         Assert.assertTrue(midContent != null);
 
         // options
-        mHiddenViewMargin = hiddenViewMargin < 0 ? PcUtils.pxFromDp(DEFAULT_HIDDEN_VIEW_MARGIN_IN_DP) : hiddenViewMargin;
+        mHiddenViewMargin = hiddenViewMargin < 0 ? MlUtils.pxFromDp(DEFAULT_HIDDEN_VIEW_MARGIN_IN_DP) : hiddenViewMargin;
         mShadowPadding = shadowPadding > 0 && shadowDrawableResId > 0 ? shadowPadding : 0;
         mHasLeftContent = leftContent != null;
         mHasRightContent = rightContent != null;
@@ -92,7 +92,7 @@ public class PcSideMenuEnabledLayout extends FrameLayout {
             public boolean onDown(MotionEvent e) {
                 mFlingDetected = false;
                 mTapMidViewToCloseSideViewDetected = false;
-                mShouldHandle = PcUtils.motionEventOnView(e, mMidView);
+                mShouldHandle = MlUtils.motionEventOnView(e, mMidView);
                 return mShouldHandle;
             }
 
@@ -100,7 +100,7 @@ public class PcSideMenuEnabledLayout extends FrameLayout {
             public boolean onSingleTapUp(MotionEvent e) {
                 if (!mShouldHandle) return false;
 
-                if (mSidePos != SidePosition.MID && PcUtils.motionEventOnView(e, mMidView)) {
+                if (mSidePos != SidePosition.MID && MlUtils.motionEventOnView(e, mMidView)) {
                     mTapMidViewToCloseSideViewDetected = true;
                     return true;
                 }
@@ -179,7 +179,7 @@ public class PcSideMenuEnabledLayout extends FrameLayout {
         getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                PcUtils.removeOnGlobalLayoutListener(PcSideMenuEnabledLayout.this, this);
+                MlUtils.removeOnGlobalLayoutListener(MlSideMenuEnabledLayout.this, this);
                 mMidView.getLayoutParams().width = getWidth() + 2 * mShadowPadding;
                 mMidView.setPadding(mShadowPadding, 0, mShadowPadding, 0);
                 setMidViewMargin(getOriginX());

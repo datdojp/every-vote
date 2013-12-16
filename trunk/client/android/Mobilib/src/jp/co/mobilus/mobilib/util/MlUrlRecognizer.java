@@ -26,7 +26,7 @@ Test cases for URL
        http://google.com -> "http://google.com" part is display as a link
     a http://google.com --> "http://google.com" part is display as a link
 ============================================================*/
-public class PcUrlRecognizer {
+public class MlUrlRecognizer {
     private static final String HTTP_PREFIX_PATTERN = "[Hh][Tt][Tt][Pp]://";
     private static final String HTTPS_PREFIX_PATTERN = "[Hh][Tt][Tt][Pp][Ss]://";
     private static final String LINK_BODY_PATTERN = "[^\\s]+";
@@ -38,7 +38,7 @@ public class PcUrlRecognizer {
     StringBuilder result = new StringBuilder();
     StringBuilder source;
 
-    public PcUrlRecognizer(String s) {
+    public MlUrlRecognizer(String s) {
         if (s == null) s = "";
         source = new StringBuilder(s);
     }

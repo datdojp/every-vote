@@ -1,8 +1,8 @@
 package jp.co.mobilus.mobilib.widget;
 
-import jp.co.pokelabo.pokechat.R;
-import jp.co.pokelabo.pokechat.util.PcInternal;
-import jp.co.pokelabo.pokechat.util.PcUtils;
+import jp.co.mobilus.mobilib.R;
+import jp.co.mobilus.mobilib.util.MlInternal;
+import jp.co.mobilus.mobilib.util.MlUtils;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -24,7 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.Scroller;
 import android.widget.TextView;
 
-public class PcSwitch extends FrameLayout {
+public class MlSwitch extends FrameLayout {
     private static final int VERTICAL_PADDING_IN_DP = 2;
     private static final String DEFAULT_ON_TEXT = "On";
     private static final String DEFAULT_OFF_TEXT = "Off";
@@ -54,33 +54,33 @@ public class PcSwitch extends FrameLayout {
     private PCSwitchCallback mCallback;
     private boolean mInitialized;
 
-    public PcSwitch(Context context) {
+    public MlSwitch(Context context) {
         super(context);
         initViews(context);
     }
 
-    public PcSwitch(Context context, AttributeSet attrs) {
+    public MlSwitch(Context context, AttributeSet attrs) {
         super(context, attrs);
         initAttr(context, attrs);
         initViews(context);
     }
 
-    public PcSwitch(Context context, AttributeSet attrs, int defStyle) {
+    public MlSwitch(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         initAttr(context, attrs);
         initViews(context);
     }
 
     private void initAttr(Context context, AttributeSet attrs) {
-        TypedArray ta = context.getTheme().obtainStyledAttributes(attrs, R.styleable.PcSwitch, 0, 0);
+        TypedArray ta = context.getTheme().obtainStyledAttributes(attrs, R.styleable.MlSwitch, 0, 0);
 
-        mOnText = ta.getString(R.styleable.PcSwitch_onText);
+        mOnText = ta.getString(R.styleable.MlSwitch_onText);
         if (mOnText == null) mOnText = DEFAULT_ON_TEXT;
 
-        mOffText = ta.getString(R.styleable.PcSwitch_offText);
+        mOffText = ta.getString(R.styleable.MlSwitch_offText);
         if (mOffText == null) mOffText = DEFAULT_OFF_TEXT;
 
-        mIsOn = ta.getBoolean(R.styleable.PcSwitch_isOn, DEFAULT_IS_ON);
+        mIsOn = ta.getBoolean(R.styleable.MlSwitch_isOn, DEFAULT_IS_ON);
     }
 
     @SuppressLint("NewApi")
@@ -88,11 +88,11 @@ public class PcSwitch extends FrameLayout {
         getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                PcUtils.removeOnGlobalLayoutListener(PcSwitch.this, this);
+                MlUtils.removeOnGlobalLayoutListener(MlSwitch.this, this);
 
                 // create layout behind
-                final int verticalPadding = PcUtils.pxFromDp(VERTICAL_PADDING_IN_DP);
-                final int horizontalPadding = PcUtils.pxFromDp(2);
+                final int verticalPadding = MlUtils.pxFromDp(VERTICAL_PADDING_IN_DP);
+                final int horizontalPadding = MlUtils.pxFromDp(2);
                 final int widthOfLayoutBehind = getWidth();
                 final int heightOfLayoutBehind = getHeight() - 2 * verticalPadding;
                 final int radius = heightOfLayoutBehind/2;
@@ -220,8 +220,8 @@ public class PcSwitch extends FrameLayout {
                 // add text
                 final int widthOfTextView = widthOfLayoutBehind - widthOfKnobView + widthOfKnobView/2;
                 final int heighOfTextView = heightOfLayoutBehind;
-                int majorTextPadding = widthOfKnobView/2 + PcUtils.pxFromDp(3);
-                int minorTextPadding = PcUtils.pxFromDp(3) + horizontalPadding + heightOfLayoutBehind/4;
+                int majorTextPadding = widthOfKnobView/2 + MlUtils.pxFromDp(3);
+                int minorTextPadding = MlUtils.pxFromDp(3) + horizontalPadding + heightOfLayoutBehind/4;
                 mOnTextView = generateTextView(context, mOnText, widthOfTextView, heighOfTextView, ON_COLOR,
                         minorTextPadding, majorTextPadding);
                 mOffTextView = generateTextView(context, mOffText, widthOfTextView, heighOfTextView, OFF_COLOR,
@@ -289,7 +289,7 @@ public class PcSwitch extends FrameLayout {
                 mInitialized = true;
 
                 // set initial status
-                PcInternal.getMainThread().post(new Runnable() {
+                MlInternal.getMainThread().post(new Runnable() {
                     @Override
                     public void run() {
                         setOn(mIsOn);
@@ -311,7 +311,7 @@ public class PcSwitch extends FrameLayout {
             setLeftMargin(mLayoutOfTexts, getCurrentXOfLayoutOfTexts(mScroller.getCurrX()));
         }
         if (!mScroller.isFinished()) {
-            PcInternal.getMainThread().post(new Runnable() {
+            MlInternal.getMainThread().post(new Runnable() {
                 @Override
                 public void run() {
                     updateTranslationX();

@@ -32,7 +32,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 
-public class SSLCertificateUtils {
+public class MlSSLCertificateUtils {
 
     @SuppressLint("DefaultLocale")
     public static boolean isHttpsUrl(String url) {
