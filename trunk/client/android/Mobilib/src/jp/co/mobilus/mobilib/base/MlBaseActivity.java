@@ -1,10 +1,10 @@
 package jp.co.mobilus.mobilib.base;
 
 import jp.co.mobilus.mobilib.R;
-import jp.co.mobilus.mobilib.observer.PcNotificationCenter;
-import jp.co.mobilus.mobilib.observer.PcObserver;
-import jp.co.mobilus.mobilib.util.PcInternal;
-import jp.co.mobilus.mobilib.util.PcUtils;
+import jp.co.mobilus.mobilib.observer.MlNotificationCenter;
+import jp.co.mobilus.mobilib.observer.MlObserver;
+import jp.co.mobilus.mobilib.util.MlInternal;
+import jp.co.mobilus.mobilib.util.MlUtils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -16,7 +16,7 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 
-public abstract class PcBaseFragmentActivity extends FragmentActivity implements PcObserver {
+public abstract class MlBaseActivity extends FragmentActivity implements MlObserver {
 
     // current status
     private int mOrientation;
@@ -24,14 +24,14 @@ public abstract class PcBaseFragmentActivity extends FragmentActivity implements
     // wrapper views
     private View mContentView;
     private ViewGroup mInappPopupContainer;
-    private PcDecorView mDecorView;
+    private MlDecorView mDecorView;
 
     // for background/foreground detecting
     private static long sLastOnPause = 0;
     private static Runnable sBackgroundStatusCheckTask = new Runnable() {
         @Override
         public void run() {
-            PcNotificationCenter.postNotification(this, PcNotificationCenter.Name.Common.GO_TO_BACKGROUND);
+            MlNotificationCenter.postNotification(this, MlNotificationCenter.Name.Common.GO_TO_BACKGROUND);
         }
     };
     private static boolean sIsBackground;
@@ -42,26 +42,26 @@ public abstract class PcBaseFragmentActivity extends FragmentActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Context context = PcInternal.getInstance().getCurrentContext();
+        Context context = MlInternal.getInstance().getCurrentContext();
         if (context == null || !(context instanceof Activity)) {
-            PcInternal.getInstance().setCurrentContext(this);
+            MlInternal.getInstance().setCurrentContext(this);
         }
         mOrientation = getResources().getConfiguration().orientation;
 
-        PcNotificationCenter.addObserver(this, PcNotificationCenter.Name.Common.GO_TO_BACKGROUND);
-        PcNotificationCenter.addObserver(this, PcNotificationCenter.Name.Common.GO_TO_FOREGROUND);
+        MlNotificationCenter.addObserver(this, MlNotificationCenter.Name.Common.GO_TO_BACKGROUND);
+        MlNotificationCenter.addObserver(this, MlNotificationCenter.Name.Common.GO_TO_FOREGROUND);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        PcInternal.getInstance().setCurrentContext(this);
+        MlInternal.getInstance().setCurrentContext(this);
 
-        PcInternal.getMainThread().removeCallbacks(sBackgroundStatusCheckTask);
+        MlInternal.getMainThread().removeCallbacks(sBackgroundStatusCheckTask);
         long now = getNow();
         if (now - sLastOnPause > mMaxAllowedTrasitionBetweenActivity) {
-            PcNotificationCenter.postNotification(this, PcNotificationCenter.Name.Common.GO_TO_FOREGROUND);
+            MlNotificationCenter.postNotification(this, MlNotificationCenter.Name.Common.GO_TO_FOREGROUND);
         }
 
         if (mInappPopupContainer == null) {
@@ -81,10 +81,10 @@ public abstract class PcBaseFragmentActivity extends FragmentActivity implements
     protected void onPause() {
         super.onPause();
 
-        PcUtils.hideKeyboard();
+        MlUtils.hideKeyboard();
 
         sLastOnPause = getNow();
-        PcInternal.getMainThread().postDelayed(sBackgroundStatusCheckTask, mMaxAllowedTrasitionBetweenActivity);
+        MlInternal.getMainThread().postDelayed(sBackgroundStatusCheckTask, mMaxAllowedTrasitionBetweenActivity);
     }
 
     @Override
@@ -96,15 +96,15 @@ public abstract class PcBaseFragmentActivity extends FragmentActivity implements
             waitForWindowOrientationReallyChanged(new Runnable() {
                 @Override
                 public void run() {
-                    PcNotificationCenter.postNotification(this, PcNotificationCenter.Name.Common.ORIENTATION_CHANGED);
+                    MlNotificationCenter.postNotification(this, MlNotificationCenter.Name.Common.ORIENTATION_CHANGED);
                 }
             });
         }
     }
 
     private void waitForWindowOrientationReallyChanged(final Runnable callback) {
-        if (PcUtils.isPortraitDisplay() != PcUtils.isPortraitWindow()) {
-            PcInternal.getMainThread().postDelayed(new Runnable() {
+        if (MlUtils.isPortraitDisplay() != MlUtils.isPortraitWindow()) {
+            MlInternal.getMainThread().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     waitForWindowOrientationReallyChanged(callback);
@@ -117,11 +117,11 @@ public abstract class PcBaseFragmentActivity extends FragmentActivity implements
 
     @Override
     public void onNotify(Object sender, String name, Object... args) {
-        if (PcNotificationCenter.Name.Common.GO_TO_FOREGROUND.equals(name)) {
+        if (MlNotificationCenter.Name.Common.GO_TO_FOREGROUND.equals(name)) {
             if (isTopActivity()) {
                 sIsBackground = false;
             }
-        } else if (PcNotificationCenter.Name.Common.GO_TO_BACKGROUND.equals(name)) {
+        } else if (MlNotificationCenter.Name.Common.GO_TO_BACKGROUND.equals(name)) {
             if (isTopActivity()) {
                 sIsBackground = true;
             }
@@ -137,7 +137,7 @@ public abstract class PcBaseFragmentActivity extends FragmentActivity implements
     }
 
     public boolean isTopActivity() {
-        return PcInternal.getInstance().getCurrentContext() == this;
+        return MlInternal.getInstance().getCurrentContext() == this;
     }
 
     private View createDecorViewAndAddContent(int layoutResId, LayoutParams params) {
@@ -150,7 +150,7 @@ public abstract class PcBaseFragmentActivity extends FragmentActivity implements
             params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         }
         layout.setLayoutParams(params);
-        PcDecorView decorView = (PcDecorView) getLayoutInflater().inflate(R.layout.pc_decor_view, null);
+        MlDecorView decorView = (MlDecorView) getLayoutInflater().inflate(R.layout.pc_decor_view, null);
         decorView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         decorView.addView(layout);
         mContentView = layout;
@@ -178,11 +178,11 @@ public abstract class PcBaseFragmentActivity extends FragmentActivity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        PcNotificationCenter.removeAllObserver(this);
+        MlNotificationCenter.removeAllObserver(this);
     }
 
     public void showInAppPopup(final View content) {
-        PcInternal.executeOnMainThread(new Runnable() {
+        MlInternal.executeOnMainThread(new Runnable() {
             @Override
             public void run() {
                 mInappPopupContainer.removeAllViews();
@@ -194,7 +194,7 @@ public abstract class PcBaseFragmentActivity extends FragmentActivity implements
     }
 
     public void hideInAppPopup() {
-        PcInternal.executeOnMainThread(new Runnable() {
+        MlInternal.executeOnMainThread(new Runnable() {
             @Override
             public void run() {
                 mInappPopupContainer.removeAllViews();
@@ -207,7 +207,7 @@ public abstract class PcBaseFragmentActivity extends FragmentActivity implements
         return mInappPopupContainer.getVisibility() == View.VISIBLE;
     }
 
-    public PcDecorView getDecorView() {
+    public MlDecorView getDecorView() {
         return mDecorView;
     }
     

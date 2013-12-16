@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
-import jp.co.mobilus.mobilib.util.PcInternal;
-import jp.co.mobilus.mobilib.util.PcUtils;
-import jp.co.mobilus.mobilib.util.SSLCertificateUtils;
+import jp.co.mobilus.mobilib.util.MlInternal;
+import jp.co.mobilus.mobilib.util.MlUtils;
+import jp.co.mobilus.mobilib.util.MlSSLCertificateUtils;
 
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
@@ -30,9 +30,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
 
-public abstract class PcApi {
+public abstract class MlApi {
 
-    private static final String TAG = PcApi.class.getSimpleName();
+    private static final String TAG = MlApi.class.getSimpleName();
 
     private final Map<String, Vector<PcApiGetCallback>> mGetRequestCallbacks = new ConcurrentHashMap<String, Vector<PcApiGetCallback>>();
 
@@ -64,20 +64,20 @@ public abstract class PcApi {
             }
         }
 
-        PcInternal.executeOnAsyncThread(new Runnable() {
+        MlInternal.executeOnAsyncThread(new Runnable() {
             @Override
             public void run() {
 
-                PcCache existingCache = null;
+                MlCache existingCache = null;
                 if (isCacheEnabled) {
-                    existingCache = DBCache.get(db, fullUrl);
+                    existingCache = MlCache.get(db, fullUrl);
                     boolean shouldReadFromCache =
                             existingCache != null &&
-                            (   !PcUtils.isNetworkConnected() ||
+                            (   !MlUtils.isNetworkConnected() ||
                                     System.currentTimeMillis() - existingCache.getDate() <= getCacheDuration(fullUrl, isBinaryRequest)    );
                     if (shouldReadFromCache) {
                         try {
-                            byte[] data = PcUtils.readCacheFile(existingCache.getFileName());
+                            byte[] data = MlUtils.readCacheFile(existingCache.getFileName());
                             if (data != null) {
                                 Vector<PcApiGetCallback> allCallbacksForFullUrl = mGetRequestCallbacks.get(fullUrl);
                                 synchronized (allCallbacksForFullUrl) {
@@ -161,7 +161,7 @@ public abstract class PcApi {
             final boolean isIgnoreSSLCertificate,
             final PcApiPostCallback callback ) {
 
-        PcInternal.executeOnAsyncThread(new Runnable() {
+        MlInternal.executeOnAsyncThread(new Runnable() {
             @Override
             public void run() {
 
@@ -171,7 +171,7 @@ public abstract class PcApi {
                     HttpContext httpContext = new BasicHttpContext();
                     HttpPost httpPost = new HttpPost(url);
 
-                    if (!PcUtils.isEmpty(params)) {
+                    if (!MlUtils.isEmpty(params)) {
                         List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
                         for (String key : params.keySet()) {
                             nameValuePairs.add(new BasicNameValuePair(key, params.get(key)));
@@ -221,35 +221,34 @@ public abstract class PcApi {
     }
 
     private HttpClient getHttpClient(String url, boolean ignoreSSLCertificate) {
-        if (SSLCertificateUtils.isHttpsUrl(url) && ignoreSSLCertificate) {
-            return SSLCertificateUtils.getHttpClientIgnoreSSLCertificate();
+        if (MlSSLCertificateUtils.isHttpsUrl(url) && ignoreSSLCertificate) {
+            return MlSSLCertificateUtils.getHttpClientIgnoreSSLCertificate();
         } else {
             return new DefaultHttpClient();
         }
     }
 
-
-    private void saveCache(SQLiteDatabase db, PcCache existingCache, String fullUrl, byte[] data) {
+    private void saveCache(SQLiteDatabase db, MlCache existingCache, String fullUrl, byte[] data) {
         try {
-            PcCache cacheToSave;
+            MlCache cacheToSave;
             if (existingCache == null) {
-                cacheToSave = new PcCache();
+                cacheToSave = new MlCache();
                 cacheToSave.setKey(fullUrl);
                 cacheToSave.setDate(System.currentTimeMillis());
-                DBCache.insert(db, cacheToSave);
+                MlCache.insert(db, cacheToSave);
             } else {
                 cacheToSave = existingCache;
                 cacheToSave.setDate(System.currentTimeMillis());
-                DBCache.update(db, cacheToSave);
+                MlCache.update(db, cacheToSave);
             }
-            PcUtils.saveCacheFile(data, cacheToSave.getFileName());
+            MlUtils.saveCacheFile(data, cacheToSave.getFileName());
         } catch (Exception e) {
             Log.e(TAG, "Failed to cache url: " + fullUrl, e);
         }
     }
 
     private String generateGetMethodFullUrl(String url, Map<String, String> params) {
-        if (!PcUtils.isEmpty(params)) {
+        if (!MlUtils.isEmpty(params)) {
             Uri.Builder builder = Uri.parse(url).buildUpon();
             for (String key : params.keySet()) {
                 builder.appendQueryParameter(key, params.get(key));
@@ -264,7 +263,7 @@ public abstract class PcApi {
 
         Header[] headers = null;
 
-        if (!PcUtils.isEmpty(headerParams)) {
+        if (!MlUtils.isEmpty(headerParams)) {
             headers = new Header[headerParams.keySet().size()];
             int i = 0;
             for (final String key : headerParams.keySet()) {
