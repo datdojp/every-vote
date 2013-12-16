@@ -1,6 +1,6 @@
 package jp.co.mobilus.mobilib.widget;
 
-import jp.co.pokelabo.pokechat.util.PcUtils;
+import jp.co.mobilus.mobilib.util.MlUtils;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
@@ -13,7 +13,7 @@ import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
-public class PcHorizontalViewPager extends HorizontalScrollView {
+public class MlHorizontalViewPager extends HorizontalScrollView {
     private static final float SCROLL_X_PER_Y_RATE_THRESHHOLD = 1.5f;
 
     private static final int DIRECTION_LEFT_TO_RIGHT = -1;
@@ -30,15 +30,15 @@ public class PcHorizontalViewPager extends HorizontalScrollView {
     private PcHorizontalViewPagerCallback mCallback;
     private int mDividerWidth;
 
-    public PcHorizontalViewPager(Context context) {
+    public MlHorizontalViewPager(Context context) {
         super(context);
     }
 
-    public PcHorizontalViewPager(Context context, AttributeSet attrs) {
+    public MlHorizontalViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public PcHorizontalViewPager(Context context, AttributeSet attrs, int defStyle) {
+    public MlHorizontalViewPager(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
@@ -74,7 +74,7 @@ public class PcHorizontalViewPager extends HorizontalScrollView {
         getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                PcUtils.removeOnGlobalLayoutListener(PcHorizontalViewPager.this, this);
+                MlUtils.removeOnGlobalLayoutListener(MlHorizontalViewPager.this, this);
                 for (int i = 0; i < pages.length; i++) {
                     // add separator
                     if (i > 0 && dividerWidth > 0) {

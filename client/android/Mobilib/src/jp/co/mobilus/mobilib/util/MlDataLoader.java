@@ -8,9 +8,9 @@ import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
 
-public abstract class PcDataLoader<T> {
+public abstract class MlDataLoader<T> {
     @SuppressWarnings("unused")
-    private static final String TAG = PcUtils.getTag(PcDataLoader.class);
+    private static final String TAG = MlUtils.getTag(MlDataLoader.class);
 
     public static interface DataRetrievedCallback<T> {
         public void onRetrieved(T data);
@@ -43,10 +43,10 @@ public abstract class PcDataLoader<T> {
     /**
      * constructors
      */
-    public PcDataLoader() {
+    public MlDataLoader() {
         this(LoadOrder.FIRST_TO_LAST);
     }
-    public PcDataLoader(LoadOrder loadOrder) {
+    public MlDataLoader(LoadOrder loadOrder) {
         mLoadOrder = loadOrder;
     }
 

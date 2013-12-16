@@ -13,7 +13,7 @@ import android.widget.TextView;
  * A movement method that traverses links in the text buffer and scrolls if
  * necessary. Supports clicking on links with DPad Center or Enter.
  */
-public class PcLinkMovementMethod extends LinkMovementMethod {
+public class MlLinkMovementMethod extends LinkMovementMethod {
     private static final long LONG_CLICK_DELAY = 500;
     private static Handler sHandler = new Handler();
     private boolean mLongClickDetected = false;
@@ -23,7 +23,7 @@ public class PcLinkMovementMethod extends LinkMovementMethod {
         public void onLinkClicked(String link);
     }
     
-    public PcLinkMovementMethod(PcLinkMovementMethodCallback callback) {
+    public MlLinkMovementMethod(PcLinkMovementMethodCallback callback) {
         super();
         mCallback = callback;
     }

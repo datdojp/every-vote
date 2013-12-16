@@ -7,7 +7,7 @@ import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.ListView;
 
-public abstract class PcPager<T> {
+public abstract class MlPager<T> {
     /**
      * instance variables
      */
@@ -75,19 +75,19 @@ public abstract class PcPager<T> {
     /**
      * constructors
      */
-    public PcPager(int offset, int limitPerLoad, PcPagerLoadOrder loadOrder) {
+    public MlPager(int offset, int limitPerLoad, PcPagerLoadOrder loadOrder) {
         this(offset, limitPerLoad);
         mLoadOrder = loadOrder;
     }
 
-    public PcPager(int offset, int limitPerLoad) {
+    public MlPager(int offset, int limitPerLoad) {
         mOffSet = offset;
         mLimitPerLoad = limitPerLoad;
 
         getListView().setOnScrollListener(new OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
-                PcPager.this.onScrollStateChanged(view, scrollState);
+                MlPager.this.onScrollStateChanged(view, scrollState);
             }
 
             @Override
@@ -110,7 +110,7 @@ public abstract class PcPager<T> {
                     }
                 }
                 mPreviousFirstVisibleItem = firstVisibleItem;
-                PcPager.this.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
+                MlPager.this.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
             }
         });
     }

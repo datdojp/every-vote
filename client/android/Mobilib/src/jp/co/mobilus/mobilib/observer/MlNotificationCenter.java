@@ -4,11 +4,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import jp.co.mobilus.mobilib.util.PcWeakArrayList;
-import jp.co.mobilus.mobilib.util.PcWeakArrayList.PcWeakArrayListCallback;
+import jp.co.mobilus.mobilib.util.MlWeakArrayList;
+import jp.co.mobilus.mobilib.util.MlWeakArrayList.PcWeakArrayListCallback;
 import android.os.Handler;
 
-public class PcNotificationCenter {
+public class MlNotificationCenter {
     public static class Name {
         public static class Common {
             public static final String ORIENTATION_CHANGED              = Common.class + "orientation_changed";
@@ -19,18 +19,18 @@ public class PcNotificationCenter {
         }
     }
 
-    private static final Map<String, PcWeakArrayList<PcObserver>> mObserverMap = new ConcurrentHashMap<String, PcWeakArrayList<PcObserver>>();
+    private static final Map<String, MlWeakArrayList<MlObserver>> mObserverMap = new ConcurrentHashMap<String, MlWeakArrayList<MlObserver>>();
     private static final Handler sMainThread = new Handler();
 
-    private PcNotificationCenter() {}
+    private MlNotificationCenter() {}
 
-    public static void addObserver(PcObserver observer, String name) {
-        PcWeakArrayList<PcObserver> observers = null;
+    public static void addObserver(MlObserver observer, String name) {
+        MlWeakArrayList<MlObserver> observers = null;
 
         if(mObserverMap.containsKey(name)) {
             observers = mObserverMap.get(name);
         } else {
-            observers = new PcWeakArrayList<PcObserver>();
+            observers = new MlWeakArrayList<MlObserver>();
             mObserverMap.put(name, observers);
         }
         if(observers.contains(observer)) return;
@@ -38,10 +38,10 @@ public class PcNotificationCenter {
         observers.add(observer);
     }
 
-    public static void removeObserver(PcObserver observer, String name) {
+    public static void removeObserver(MlObserver observer, String name) {
         if(!mObserverMap.containsKey(name)) return;
 
-        PcWeakArrayList<PcObserver> observers = null;
+        MlWeakArrayList<MlObserver> observers = null;
 
         observers = mObserverMap.get(name);
         if(!observers.contains(observer)) return;
@@ -53,7 +53,7 @@ public class PcNotificationCenter {
         }
     }
 
-    public static void removeAllObserver(PcObserver observer) {
+    public static void removeAllObserver(MlObserver observer) {
         Set<String> keys = mObserverMap.keySet();
         for (String aKey : keys) {
             removeObserver(observer, aKey);
@@ -67,15 +67,15 @@ public class PcNotificationCenter {
     public static void postNotification(final Object sender, final boolean async, final String name, final Object... args) {
         if(!mObserverMap.containsKey(name)) return;
 
-        PcWeakArrayList<PcObserver> observers;
+        MlWeakArrayList<MlObserver> observers;
         if (async) {
             observers = mObserverMap.get(name);
         } else {
-            observers = new PcWeakArrayList<PcObserver>(mObserverMap.get(name));
+            observers = new MlWeakArrayList<MlObserver>(mObserverMap.get(name));
         }
-        observers.iterateWithCallback(new PcWeakArrayListCallback<PcObserver>() {
+        observers.iterateWithCallback(new PcWeakArrayListCallback<MlObserver>() {
             @Override
-            public void onInterate(final PcObserver observer) {
+            public void onInterate(final MlObserver observer) {
                 if (async) {
                     sMainThread.post(new Runnable() {
                         @Override
