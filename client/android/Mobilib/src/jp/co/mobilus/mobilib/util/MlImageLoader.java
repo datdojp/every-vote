@@ -302,11 +302,12 @@ public abstract class MlImageLoader<T> {
 
         isLoadingImage = true;
         boolean shouldEnableCache = shouldEnableCache(item);
+        final boolean isNetworkConnected = MlUtils.isNetworkConnected();
         retrieveImage(item, shouldEnableCache, new ImageRetrievingCallback() {
             @Override
             public void onRetrievedByteArrray(final byte[] bmData) {
                 if (bmData == null || bmData.length == 0) {
-                    handleBadReturnedBitmap(item);
+                    handleBadReturnedBitmap(item, isNetworkConnected);
                 } else {
                     new MlAsyncTask() {
                         @Override
@@ -319,7 +320,7 @@ public abstract class MlImageLoader<T> {
                                     bm = BitmapFactory.decodeByteArray(bmData, 0, bmData.length);
                                 }
                                 if (bm == null) {
-                                    handleBadReturnedBitmap(item);
+                                    handleBadReturnedBitmap(item, isNetworkConnected);
                                 } else {
                                     handleGoodReturnedBitmap(item, bm);
                                 }
@@ -336,7 +337,7 @@ public abstract class MlImageLoader<T> {
             @Override
             public void onRetrievedBitmap(Bitmap bm) {
                 if (bm == null) {
-                    handleBadReturnedBitmap(item);
+                    handleBadReturnedBitmap(item, isNetworkConnected);
                 } else {
                     handleGoodReturnedBitmap(item, bm);
                 }
@@ -349,9 +350,20 @@ public abstract class MlImageLoader<T> {
         postLoadImageForItem(item);
     }
 
-    private void handleBadReturnedBitmap(T item) {
-        put(getFullCacheKey(item), getErrorImageResource(item));
+    private void handleBadReturnedBitmap(T item, boolean isNetworkConnected) {
+        final String fullCacheKey = getFullCacheKey(item);
+        put(fullCacheKey, getErrorImageResource(item));
         postLoadImageForItem(item);
+        
+        // failed due to network disconnect -> should try to load later
+        if (!isNetworkConnected) {
+            sMainThreadHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    remove(fullCacheKey);
+                }
+            });
+        }
     }
 
     private void handleOutOfMemory(T item) {
