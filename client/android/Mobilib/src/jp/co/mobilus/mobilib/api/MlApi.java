@@ -34,7 +34,7 @@ public abstract class MlApi {
 
     private static final String TAG = MlApi.class.getSimpleName();
 
-    private final Map<String, Vector<PcApiGetCallback>> mGetRequestCallbacks = new ConcurrentHashMap<String, Vector<PcApiGetCallback>>();
+    private final Map<String, Vector<MlApiGetCallback>> mGetRequestCallbacks = new ConcurrentHashMap<String, Vector<MlApiGetCallback>>();
 
     public void get(
             final String url,
@@ -44,15 +44,15 @@ public abstract class MlApi {
             final boolean isBinaryRequest,
             final boolean isIgnoreSSLCertificate,
             final SQLiteDatabase db, 
-            PcApiGetCallback callback ) {
+            MlApiGetCallback callback ) {
 
         final String fullUrl = generateGetMethodFullUrl(url, params);
 
         synchronized (mGetRequestCallbacks) {
 
-            Vector<PcApiGetCallback> allCallbacksForFullUrl = mGetRequestCallbacks.get(fullUrl);
+            Vector<MlApiGetCallback> allCallbacksForFullUrl = mGetRequestCallbacks.get(fullUrl);
             if (allCallbacksForFullUrl == null) {
-                allCallbacksForFullUrl = new Vector<PcApiGetCallback>();
+                allCallbacksForFullUrl = new Vector<MlApiGetCallback>();
                 mGetRequestCallbacks.put(fullUrl, allCallbacksForFullUrl);
             }
             synchronized (allCallbacksForFullUrl) {
@@ -79,9 +79,9 @@ public abstract class MlApi {
                         try {
                             byte[] data = MlUtils.readCacheFile(existingCache.getFileName());
                             if (data != null) {
-                                Vector<PcApiGetCallback> allCallbacksForFullUrl = mGetRequestCallbacks.get(fullUrl);
+                                Vector<MlApiGetCallback> allCallbacksForFullUrl = mGetRequestCallbacks.get(fullUrl);
                                 synchronized (allCallbacksForFullUrl) {
-                                    for (PcApiGetCallback cb : allCallbacksForFullUrl) {
+                                    for (MlApiGetCallback cb : allCallbacksForFullUrl) {
                                         if (isBinaryRequest) cb.onSuccess(data);
                                         else cb.onSuccess(new String(data));
                                     }
@@ -108,9 +108,9 @@ public abstract class MlApi {
 
                     int statusCode = response.getStatusLine().getStatusCode();
                     if (statusCode < 200 || statusCode > 299) {
-                        Vector<PcApiGetCallback> allCallbacksForFullUrl = mGetRequestCallbacks.get(fullUrl);
+                        Vector<MlApiGetCallback> allCallbacksForFullUrl = mGetRequestCallbacks.get(fullUrl);
                         synchronized (allCallbacksForFullUrl) {
-                            for (PcApiGetCallback cb : allCallbacksForFullUrl) {
+                            for (MlApiGetCallback cb : allCallbacksForFullUrl) {
                                 cb.onFailure(statusCode, response.getStatusLine().getReasonPhrase());
                             }
                             allCallbacksForFullUrl.clear();
@@ -125,9 +125,9 @@ public abstract class MlApi {
                         saveCache(db, existingCache, fullUrl, data);
                     }
 
-                    Vector<PcApiGetCallback> allCallbacksForFullUrl = mGetRequestCallbacks.get(fullUrl);
+                    Vector<MlApiGetCallback> allCallbacksForFullUrl = mGetRequestCallbacks.get(fullUrl);
                     synchronized (allCallbacksForFullUrl) {
-                        for (PcApiGetCallback cb : allCallbacksForFullUrl) {
+                        for (MlApiGetCallback cb : allCallbacksForFullUrl) {
                             if (isBinaryRequest) cb.onSuccess(data);
                             else cb.onSuccess(new String(data));
                         }
@@ -136,9 +136,9 @@ public abstract class MlApi {
                 } catch (Exception e) {
                     Log.e(TAG, "Failed to download file", e);
 
-                    Vector<PcApiGetCallback> allCallbacksForFullUrl = mGetRequestCallbacks.get(fullUrl);
+                    Vector<MlApiGetCallback> allCallbacksForFullUrl = mGetRequestCallbacks.get(fullUrl);
                     synchronized (allCallbacksForFullUrl) {
-                        for (PcApiGetCallback cb : allCallbacksForFullUrl) {
+                        for (MlApiGetCallback cb : allCallbacksForFullUrl) {
                             cb.onFailure(-1, "Unknown error");
                         }
                         allCallbacksForFullUrl.clear();
@@ -148,7 +148,7 @@ public abstract class MlApi {
         });
     }
 
-    public static abstract class PcApiGetCallback {
+    public static abstract class MlApiGetCallback {
         public void onSuccess(byte[] data) {}
         public void onSuccess(String data) {}
         public abstract void onFailure(int error, String errorMessage);
@@ -159,7 +159,7 @@ public abstract class MlApi {
             final Map<String, String> params,
             final Map<String, String> headerParams,
             final boolean isIgnoreSSLCertificate,
-            final PcApiPostCallback callback ) {
+            final MlApiPostCallback callback ) {
 
         MlInternal.executeOnAsyncThread(new Runnable() {
             @Override
@@ -205,7 +205,7 @@ public abstract class MlApi {
         });
     }
 
-    public static abstract class PcApiPostCallback {
+    public static abstract class MlApiPostCallback {
         public void onSuccess(int statusCode, String data) {}
         public abstract void onFailure(int error, String errorMessage);
     }

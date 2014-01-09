@@ -50,7 +50,7 @@ public class MlWeakArrayList<T> {
         }
     }
 
-    public void iterateWithCallback(PcWeakArrayListCallback<T> cb) {
+    public void iterateWithCallback(MlWeakArrayListCallback<T> cb) {
         if (cb == null) return;
 
         synchronized (mData) {
@@ -67,7 +67,7 @@ public class MlWeakArrayList<T> {
         return null; // not yet used
     }
 
-    public static interface PcWeakArrayListCallback<T> {
+    public static interface MlWeakArrayListCallback<T> {
         public void onInterate(T item);
     }
 

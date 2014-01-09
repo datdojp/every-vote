@@ -27,7 +27,7 @@ public class MlHorizontalViewPager extends HorizontalScrollView {
     private int mCurrentScrollX;
     private int mCurrentIndex;
     private boolean mDraggingHorizontally;
-    private PcHorizontalViewPagerCallback mCallback;
+    private MlHorizontalViewPagerCallback mCallback;
     private int mDividerWidth;
 
     public MlHorizontalViewPager(Context context) {
@@ -47,7 +47,7 @@ public class MlHorizontalViewPager extends HorizontalScrollView {
             final View[] pages,
             final int dividerWidth,
             final int dividerColor,
-            PcHorizontalViewPagerCallback callback) {
+            MlHorizontalViewPagerCallback callback) {
         mCallback = callback;
         
         // setup
@@ -228,7 +228,7 @@ public class MlHorizontalViewPager extends HorizontalScrollView {
         }
     }
 
-    public static interface PcHorizontalViewPagerCallback {
+    public static interface MlHorizontalViewPagerCallback {
         public void onIndexChanged(int oldIndex, int newIndex);
     }
     

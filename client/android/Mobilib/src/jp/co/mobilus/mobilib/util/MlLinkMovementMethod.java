@@ -17,13 +17,13 @@ public class MlLinkMovementMethod extends LinkMovementMethod {
     private static final long LONG_CLICK_DELAY = 500;
     private static Handler sHandler = new Handler();
     private boolean mLongClickDetected = false;
-    private PcLinkMovementMethodCallback mCallback;
+    private MlLinkMovementMethodCallback mCallback;
 
-    public static interface PcLinkMovementMethodCallback {
+    public static interface MlLinkMovementMethodCallback {
         public void onLinkClicked(String link);
     }
     
-    public MlLinkMovementMethod(PcLinkMovementMethodCallback callback) {
+    public MlLinkMovementMethod(MlLinkMovementMethodCallback callback) {
         super();
         mCallback = callback;
     }

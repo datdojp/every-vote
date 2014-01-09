@@ -50,7 +50,7 @@ public class MlSideMenuEnabledLayout extends FrameLayout {
     private int mFlingDirection;
     private boolean mTapMidViewToCloseSideViewDetected;
     private Handler mMainThread = new Handler();
-    private PcSideMenuEnabledLayoutDelegate mDelegate;
+    private MlSideMenuEnabledLayoutDelegate mDelegate;
 
     public MlSideMenuEnabledLayout(Context context) {
         super(context);
@@ -72,7 +72,7 @@ public class MlSideMenuEnabledLayout extends FrameLayout {
             final int hiddenViewMargin,
             final int shadowPadding,
             final int shadowDrawableResId,
-            final PcSideMenuEnabledLayoutDelegate delegate) {
+            final MlSideMenuEnabledLayoutDelegate delegate) {
 
         // assertions
         Assert.assertTrue(midContent != null);
@@ -383,7 +383,7 @@ public class MlSideMenuEnabledLayout extends FrameLayout {
         return getWidth() - (mHiddenViewMargin + mShadowPadding);
     }
 
-    public static interface PcSideMenuEnabledLayoutDelegate {
+    public static interface MlSideMenuEnabledLayoutDelegate {
         public boolean shouldAllowSwipeToOpenSideView(MotionEvent event);
         public void handleCurrentSideChange(SidePosition pos);
     }

@@ -15,7 +15,7 @@ public class MlDecorView extends FrameLayout {
 
     private int mMaxDisplaySize;
     private int mMinDisplaySize;
-    private PcDecorViewOnSizeChangedDelegate mSizeChangedDelegate;
+    private MlDecorViewOnSizeChangedDelegate mSizeChangedDelegate;
 
 
     public MlDecorView(Context context) {
@@ -57,11 +57,11 @@ public class MlDecorView extends FrameLayout {
         }
     }
 
-    public static interface PcDecorViewOnSizeChangedDelegate {
+    public static interface MlDecorViewOnSizeChangedDelegate {
         public void onSizeChanged(int w, int h, int oldw, int oldh);
     }
 
-    public void setSizeChangedDelegate(PcDecorViewOnSizeChangedDelegate delegate) {
+    public void setSizeChangedDelegate(MlDecorViewOnSizeChangedDelegate delegate) {
         mSizeChangedDelegate = delegate;
     }
     
