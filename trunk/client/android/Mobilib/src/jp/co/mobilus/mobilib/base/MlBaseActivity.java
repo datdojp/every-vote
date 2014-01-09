@@ -65,7 +65,7 @@ public abstract class MlBaseActivity extends FragmentActivity implements MlObser
         }
 
         if (mInappPopupContainer == null) {
-            mInappPopupContainer = (ViewGroup) findViewById(R.id.pc_inapp_popup_container);
+            mInappPopupContainer = (ViewGroup) findViewById(R.id.ml_inapp_popup_container);
 
             // do not allow touch event below pop-up background
             mInappPopupContainer.setOnTouchListener(new OnTouchListener() {
@@ -150,7 +150,7 @@ public abstract class MlBaseActivity extends FragmentActivity implements MlObser
             params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         }
         layout.setLayoutParams(params);
-        MlDecorView decorView = (MlDecorView) getLayoutInflater().inflate(R.layout.pc_decor_view, null);
+        MlDecorView decorView = (MlDecorView) getLayoutInflater().inflate(R.layout.ml_decor_view, null);
         decorView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         decorView.addView(layout);
         mContentView = layout;

@@ -55,7 +55,7 @@ public abstract class MlImageLoader<T> {
      */
     private final Stack<T> mQueue = new Stack<T>();
     private boolean isLoadingImage = false;
-    private PcImageLoaderLoadOrder mLoadOrder = PcImageLoaderLoadOrder.FIRST_TO_LAST;
+    private MlImageLoaderLoadOrder mLoadOrder = MlImageLoaderLoadOrder.FIRST_TO_LAST;
 
     /**
      * class variables and class methods
@@ -79,7 +79,6 @@ public abstract class MlImageLoader<T> {
                 protected void entryRemoved(boolean evicted, String key, Object oldValue, Object newValue) {
                     if (oldValue instanceof Bitmap) {
                         unloadImageViewBoundWithBitmap((Bitmap) oldValue);
-//                        PcUtils.recycleBitmap((Bitmap) oldValue);
                     }
                     synchronized (mCacheKeys) {
                         mCacheKeys.remove(key);
@@ -179,10 +178,10 @@ public abstract class MlImageLoader<T> {
     }
 
     public MlImageLoader() {
-        this(PcImageLoaderLoadOrder.FIRST_TO_LAST);
+        this(MlImageLoaderLoadOrder.FIRST_TO_LAST);
     }
 
-    public MlImageLoader(PcImageLoaderLoadOrder loadOrder) {
+    public MlImageLoader(MlImageLoaderLoadOrder loadOrder) {
         mLoadOrder = loadOrder;
     }
 
@@ -254,12 +253,12 @@ public abstract class MlImageLoader<T> {
         if (mQueue.isEmpty()) return null;
 
         // find the next visible item in queue
-        if (mLoadOrder == PcImageLoaderLoadOrder.FIRST_TO_LAST) {
+        if (mLoadOrder == MlImageLoaderLoadOrder.FIRST_TO_LAST) {
             for (int i = 0; i < viewGroup.getChildCount(); i++) {
                 T item = doGetNextItem(viewGroup, i);
                 if (item != null) return item;
             }
-        } else if (mLoadOrder == PcImageLoaderLoadOrder.LAST_TO_FIRST) {
+        } else if (mLoadOrder == MlImageLoaderLoadOrder.LAST_TO_FIRST) {
             for (int i = viewGroup.getChildCount()-1; i >= 0; i--) {
                 T item = doGetNextItem(viewGroup, i);
                 if (item != null) return item;
@@ -427,7 +426,7 @@ public abstract class MlImageLoader<T> {
         System.gc();
     }
 
-    public static enum PcImageLoaderLoadOrder {
+    public static enum MlImageLoaderLoadOrder {
         FIRST_TO_LAST,
         LAST_TO_FIRST;
     }

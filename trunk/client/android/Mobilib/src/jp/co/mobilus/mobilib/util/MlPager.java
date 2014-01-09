@@ -15,7 +15,7 @@ public abstract class MlPager<T> {
     private int mLimitPerLoad;
     private boolean mIsLoading;
     private boolean mDidReachLastItem;
-    private PcPagerLoadOrder mLoadOrder = PcPagerLoadOrder.LOAD_MORE_AT_BOTTOM;
+    private MlPagerLoadOrder mLoadOrder = MlPagerLoadOrder.LOAD_MORE_AT_BOTTOM;
     private int mPreviousFirstVisibleItem = 0;
     private static final Handler sMainThreadHandler = new Handler();
 
@@ -34,7 +34,7 @@ public abstract class MlPager<T> {
 
         mIsLoading = true;
         if (shouldShowLoading()) showLoading();
-        load(mOffSet, mLimitPerLoad, new PcPagerCallback<T>() {
+        load(mOffSet, mLimitPerLoad, new MlPagerCallback<T>() {
             @Override
             public void onLoaded(List<T> results) {
                 if (shouldShowLoading()) hideLoading();
@@ -43,20 +43,20 @@ public abstract class MlPager<T> {
 
                 if (isPreviousItemsIncludedInLoadedItem()) {
                     if (results.size() < mOffSet + mLimitPerLoad) mDidReachLastItem = true;
-                    if (mLoadOrder == PcPagerLoadOrder.LOAD_MORE_AT_TOP) {
+                    if (mLoadOrder == MlPagerLoadOrder.LOAD_MORE_AT_TOP) {
                         mPreviousFirstVisibleItem = results.size() - mOffSet;
                     }
                     mOffSet = results.size();
                 } else {
                     if (results.size() < mLimitPerLoad) mDidReachLastItem = true;
-                    if (mLoadOrder == PcPagerLoadOrder.LOAD_MORE_AT_TOP) {
+                    if (mLoadOrder == MlPagerLoadOrder.LOAD_MORE_AT_TOP) {
                         mPreviousFirstVisibleItem = results.size();
                     }
                     mOffSet += results.size();
                 }
 
                 processNewItems(results);
-                if (mLoadOrder == PcPagerLoadOrder.LOAD_MORE_AT_TOP) {
+                if (mLoadOrder == MlPagerLoadOrder.LOAD_MORE_AT_TOP) {
                     sMainThreadHandler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -75,7 +75,7 @@ public abstract class MlPager<T> {
     /**
      * constructors
      */
-    public MlPager(int offset, int limitPerLoad, PcPagerLoadOrder loadOrder) {
+    public MlPager(int offset, int limitPerLoad, MlPagerLoadOrder loadOrder) {
         this(offset, limitPerLoad);
         mLoadOrder = loadOrder;
     }
@@ -92,7 +92,7 @@ public abstract class MlPager<T> {
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (mLoadOrder == PcPagerLoadOrder.LOAD_MORE_AT_BOTTOM) {
+                if (mLoadOrder == MlPagerLoadOrder.LOAD_MORE_AT_BOTTOM) {
                     if (firstVisibleItem + visibleItemCount >= totalItemCount) {
                         if (isAutoLoadMore()) {
                             loadMore();
@@ -100,7 +100,7 @@ public abstract class MlPager<T> {
                             onNeedLoadMore();
                         }
                     }
-                } else if (mLoadOrder == PcPagerLoadOrder.LOAD_MORE_AT_TOP) {
+                } else if (mLoadOrder == MlPagerLoadOrder.LOAD_MORE_AT_TOP) {
                     if (firstVisibleItem == 0 && mPreviousFirstVisibleItem > firstVisibleItem) {
                         if (isAutoLoadMore()) {
                             loadMore();
@@ -120,7 +120,7 @@ public abstract class MlPager<T> {
      */
     protected abstract ListView getListView();
     protected abstract boolean shouldShowLoading();
-    protected abstract void load(int offset, int limit, PcPagerCallback<T> cb);
+    protected abstract void load(int offset, int limit, MlPagerCallback<T> cb);
     protected abstract void processNewItems(List<T> newItems);
     protected abstract void showLoading();
     protected abstract void hideLoading();
@@ -137,11 +137,11 @@ public abstract class MlPager<T> {
     /**
      * inner classes
      */
-    public static interface PcPagerCallback<T> {
+    public static interface MlPagerCallback<T> {
         public void onLoaded(List<T> results);
     }
 
-    public static enum PcPagerLoadOrder {
+    public static enum MlPagerLoadOrder {
         LOAD_MORE_AT_BOTTOM,
         LOAD_MORE_AT_TOP;
     }

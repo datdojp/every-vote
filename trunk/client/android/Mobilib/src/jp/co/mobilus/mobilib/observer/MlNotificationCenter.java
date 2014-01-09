@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import jp.co.mobilus.mobilib.util.MlWeakArrayList;
-import jp.co.mobilus.mobilib.util.MlWeakArrayList.PcWeakArrayListCallback;
+import jp.co.mobilus.mobilib.util.MlWeakArrayList.MlWeakArrayListCallback;
 import android.os.Handler;
 
 public class MlNotificationCenter {
@@ -73,7 +73,7 @@ public class MlNotificationCenter {
         } else {
             observers = new MlWeakArrayList<MlObserver>(mObserverMap.get(name));
         }
-        observers.iterateWithCallback(new PcWeakArrayListCallback<MlObserver>() {
+        observers.iterateWithCallback(new MlWeakArrayListCallback<MlObserver>() {
             @Override
             public void onInterate(final MlObserver observer) {
                 if (async) {
