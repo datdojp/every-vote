@@ -1,7 +1,8 @@
 package com.datdvt.everyvote;
 
-import android.app.Application;
+import jp.co.mobilus.mobilib.base.MlBaseApplication;
 
-public class EvApplication extends Application {
+
+public class EvApplication extends MlBaseApplication {
 
 }
