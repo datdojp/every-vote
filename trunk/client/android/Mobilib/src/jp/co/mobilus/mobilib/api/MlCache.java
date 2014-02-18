@@ -3,46 +3,47 @@ package jp.co.mobilus.mobilib.api;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import jp.co.mobilus.mobilib.db.DBBase;
 import jp.co.mobilus.mobilib.util.MlUtils;
 
-public class MlCache {
-
+public class MlCache extends DBBase {
+    private static final String TABLE = "ml_cache";
     private String mKey;
     private String mFileName;
     private long mDate;
 
     public static void createTable(SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS pc_cache");
-        db.execSQL("CREATE TABLE IF NOT EXISTS pc_cache("
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE);
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE + "("
                 + "key      TEXT NOT NULL,"
                 + "date     LONG)");
-        db.execSQL("CREATE INDEX pc_cache_index ON pc_cache(key)");
+        db.execSQL("CREATE INDEX " + TABLE + "_index ON " + TABLE + "(key)");
     }
 
     public static void dropTable(SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS pc_cache");
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE);
     }
 
-    public static void deleteAll(SQLiteDatabase db) {
-        db.delete("pc_cache", null, null);
+    public static void deleteAll() {
+        getDatabase().delete(TABLE, null, null);
     }
 
-    public static boolean insert(SQLiteDatabase db, MlCache cache) {
+    public static boolean insert(MlCache cache) {
         ContentValues values = new ContentValues();
         values.put("key", cache.getKey());
         values.put("date", cache.getDate());
-        return -1 != db.insert("pc_cache", null, values);
+        return -1 != getDatabase().insert(TABLE, null, values);
     }
 
-    public static boolean update(SQLiteDatabase db, MlCache cache) {
+    public static boolean update(MlCache cache) {
         ContentValues values = new ContentValues();
         values.put("date", cache.getDate());
-        return 0 != db.update("pc_cache", values, "key = ?", new String[] { cache.getKey() });
+        return 0 != getDatabase().update(TABLE, values, "key = ?", new String[] { cache.getKey() });
     }
 
-    public static MlCache get(SQLiteDatabase db, String key) {
-        Cursor cur = db.query(
-                "pc_cache",
+    public static MlCache get(String key) {
+        Cursor cur = getDatabase().query(
+                TABLE,
                 new String[] {"date"}, 
                 "key = ?",
                 new String[] { key },
