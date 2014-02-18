@@ -6,9 +6,12 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import junit.framework.Assert;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
@@ -85,18 +88,24 @@ public class MlInternal {
         return -1;
     }
 
+    @SuppressLint("NewApi")
     public static void executeOnAsyncThread(final Runnable action) {
         Assert.assertNotNull(action);
         executeOnMainThread(new Runnable() {
             @Override
             public void run() {
-                new MlAsyncTask() {
+                MlAsyncTask task = new MlAsyncTask() {
                     @Override
                     protected Void doInBackground(Void... params) {
                         action.run();
                         return null;
                     }
-                }.execute();
+                };
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                else
+                    task.execute();
+                
             }
         });
     }
