@@ -8,8 +8,8 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 import jp.co.mobilus.mobilib.util.MlInternal;
-import jp.co.mobilus.mobilib.util.MlUtils;
 import jp.co.mobilus.mobilib.util.MlSSLCertificateUtils;
+import jp.co.mobilus.mobilib.util.MlUtils;
 
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
@@ -26,7 +26,6 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
 
@@ -43,7 +42,6 @@ public abstract class MlApi {
             final boolean isCacheEnabled,
             final boolean isBinaryRequest,
             final boolean isIgnoreSSLCertificate,
-            final SQLiteDatabase db, 
             MlApiGetCallback callback ) {
 
         final String fullUrl = generateGetMethodFullUrl(url, params);
@@ -70,7 +68,7 @@ public abstract class MlApi {
 
                 MlCache existingCache = null;
                 if (isCacheEnabled) {
-                    existingCache = MlCache.get(db, fullUrl);
+                    existingCache = MlCache.get(fullUrl);
                     boolean shouldReadFromCache =
                             existingCache != null &&
                             (   !MlUtils.isNetworkConnected() ||
@@ -122,7 +120,7 @@ public abstract class MlApi {
                     byte[] data = EntityUtils.toByteArray(response.getEntity());
 
                     if (isCacheEnabled) {
-                        saveCache(db, existingCache, fullUrl, data);
+                        saveCache(existingCache, fullUrl, data);
                     }
 
                     Vector<MlApiGetCallback> allCallbacksForFullUrl = mGetRequestCallbacks.get(fullUrl);
@@ -228,18 +226,18 @@ public abstract class MlApi {
         }
     }
 
-    private void saveCache(SQLiteDatabase db, MlCache existingCache, String fullUrl, byte[] data) {
+    private void saveCache(MlCache existingCache, String fullUrl, byte[] data) {
         try {
             MlCache cacheToSave;
             if (existingCache == null) {
                 cacheToSave = new MlCache();
                 cacheToSave.setKey(fullUrl);
                 cacheToSave.setDate(System.currentTimeMillis());
-                MlCache.insert(db, cacheToSave);
+                MlCache.insert(cacheToSave);
             } else {
                 cacheToSave = existingCache;
                 cacheToSave.setDate(System.currentTimeMillis());
-                MlCache.update(db, cacheToSave);
+                MlCache.update(cacheToSave);
             }
             MlUtils.saveCacheFile(data, cacheToSave.getFileName());
         } catch (Exception e) {
