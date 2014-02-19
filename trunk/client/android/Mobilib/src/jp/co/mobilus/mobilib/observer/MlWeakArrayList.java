@@ -1,4 +1,4 @@
-package jp.co.mobilus.mobilib.util;
+package jp.co.mobilus.mobilib.observer;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-public class MlWeakArrayList<T> {
+class MlWeakArrayList<T> {
     private List<WeakReference<T>> mData = new Vector<WeakReference<T>>();
 
     public MlWeakArrayList() {}

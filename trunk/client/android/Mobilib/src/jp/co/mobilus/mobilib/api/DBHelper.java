@@ -1,4 +1,4 @@
-package jp.co.mobilus.mobilib.db;
+package jp.co.mobilus.mobilib.api;
 
 import jp.co.mobilus.mobilib.api.MlCache;
 import android.content.Context;
@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 /**
  * データベースのヘルパークラス。
  */
-public class DBHelper extends SQLiteOpenHelper {
+class DBHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "mobilib.db";
     private static final int DB_VERSION = 1;
     private static DBHelper instance;

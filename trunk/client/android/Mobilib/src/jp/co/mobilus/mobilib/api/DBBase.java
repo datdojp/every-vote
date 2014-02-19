@@ -1,12 +1,9 @@
-package jp.co.mobilus.mobilib.db;
+package jp.co.mobilus.mobilib.api;
 
 import jp.co.mobilus.mobilib.util.MlUtils;
 import android.database.sqlite.SQLiteDatabase;
 
-/**
- * DBxxxクラスのスーパークラス。
- */
-public abstract class DBBase {
+abstract class DBBase {
     private static SQLiteDatabase sDb;
     protected static SQLiteDatabase getDatabase() {
         if (sDb == null) {
