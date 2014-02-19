@@ -58,13 +58,13 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
-public class MlUtils {
+public class MlUtils extends MlInternal {
     private static final String TAG = getTag(MlUtils.class);
     private static float density = 0;
     private static final String EMAIL_TYPE = "message/rfc822";
 
     public static void hideKeyboard() {
-        Activity activity = (Activity) MlInternal.getInstance().getCurrentContext();
+        Activity activity = (Activity) getCurrentContext();
         View currentFocusedView = activity.getCurrentFocus();
         if (currentFocusedView != null) {
             InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -79,7 +79,7 @@ public class MlUtils {
 
     public static int pxFromDp(int dp) {
         if (density == 0) {
-            density = MlInternal.getInstance().getCurrentContext().getResources().getDisplayMetrics().density;
+            density = getCurrentContext().getResources().getDisplayMetrics().density;
         }
         return (int) (dp * density);
     }
@@ -89,11 +89,11 @@ public class MlUtils {
     }
 
     public static boolean isPortraitDisplay() {
-        return MlInternal.getInstance().getCurrentContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
+        return getCurrentContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
     }
 
     public static boolean isPortraitWindow() {
-        Activity activity = (Activity) MlInternal.getInstance().getCurrentContext();
+        Activity activity = (Activity) getCurrentContext();
         View root = activity.getWindow().getDecorView();
         return root.getWidth() <= root.getHeight();
     }
@@ -105,7 +105,7 @@ public class MlUtils {
     }
 
     public static boolean isNetworkConnected() {
-        return isNetworkConnected(MlInternal.getInstance().getCurrentContext());
+        return isNetworkConnected(getCurrentContext());
     }
 
     public static Bitmap loadBitmapMatchSpecifiedSize(final int targetW, final int targetH, final byte[] bmData) {
@@ -156,7 +156,7 @@ public class MlUtils {
     public static int[] getBitmapSizes(int resId) {
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeResource(MlInternal.getInstance().getCurrentContext().getResources(), resId, bmOptions);
+        BitmapFactory.decodeResource(getCurrentContext().getResources(), resId, bmOptions);
         return new int[]{ bmOptions.outWidth, bmOptions.outHeight };
     }
 
@@ -278,7 +278,7 @@ public class MlUtils {
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     @SuppressWarnings("deprecation")
     public static int[] getDisplaySizes() {
-        Context context = MlInternal.getInstance().getCurrentContext();
+        Context context = getCurrentContext();
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Display display = windowManager.getDefaultDisplay();
         if (Build.VERSION.SDK_INT < 13) {
@@ -332,7 +332,7 @@ public class MlUtils {
     }
 
     public static String getCacheAsbPath(String relativePath) {
-        File cacheDir = MlInternal.getInstance().getCurrentContext().getCacheDir();
+        File cacheDir = getCurrentContext().getCacheDir();
         return cacheDir.getAbsolutePath().concat("/").concat(relativePath);
     }
 
@@ -370,17 +370,17 @@ public class MlUtils {
     }
 
     public static void showAlert(final int titleResId, final int messageResId, final Runnable postTask) {
-        MlInternal.getMainThread().post(new Runnable() { 
+        executeOnMainThread(new Runnable() { 
             @Override
             public void run() {
-                new AlertDialog.Builder(MlInternal.getInstance().getCurrentContext())
+                new AlertDialog.Builder(getCurrentContext())
                 .setTitle(titleResId)
                 .setMessage(messageResId)
                 .setNegativeButton(android.R.string.ok, new OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        if (postTask != null) MlInternal.getMainThread().post(postTask);
+                        if (postTask != null) getMainThreadHandler().post(postTask);
                     }
                 })
                 .show();
@@ -391,10 +391,10 @@ public class MlUtils {
     private static ProgressDialog sProgressDialog;
     private static int sProgressDialogCount;
     public synchronized static void showProgressDialog(final int messageResId) {
-        MlInternal.executeOnMainThread(new Runnable() {
+        executeOnMainThread(new Runnable() {
             @Override
             public void run() {
-                Context context = MlInternal.getInstance().getCurrentContext();
+                Context context = getCurrentContext();
                 if (sProgressDialogCount == 0) {
                     sProgressDialog = new ProgressDialog(context);
                     sProgressDialog.setMessage(context.getString(messageResId));
@@ -407,7 +407,7 @@ public class MlUtils {
     }
 
     public synchronized static void hideProgressDialog() {
-        MlInternal.executeOnMainThread(new Runnable() {
+        executeOnMainThread(new Runnable() {
             @Override
             public void run() {
                 sProgressDialogCount--;
@@ -450,7 +450,7 @@ public class MlUtils {
             intent.putExtra(Intent.EXTRA_TEXT, (Spanned)text);
         }
         try {
-            MlInternal.getInstance().getCurrentContext()
+            getCurrentContext()
             .startActivity(Intent.createChooser(intent, title));
         } catch (ActivityNotFoundException e) {
             Log.e(TAG, "Cannot send email", e);
@@ -525,7 +525,7 @@ public class MlUtils {
 
         if (MlUtils.isEmpty(packageName)) return false;
 
-        PackageManager pm = MlInternal.getInstance().getCurrentContext().getPackageManager();
+        PackageManager pm = getCurrentContext().getPackageManager();
         try {
             pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
             return true;
@@ -539,16 +539,16 @@ public class MlUtils {
     @SuppressLint("NewApi")
     public static void copyTextToClipboard(String text) {
         if (Build.VERSION.SDK_INT < 11) {
-            android.text.ClipboardManager clipboard = (android.text.ClipboardManager) MlInternal.getInstance().getCurrentContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getCurrentContext().getSystemService(Context.CLIPBOARD_SERVICE);
             clipboard.setText(text);
         } else {
-            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) MlInternal.getInstance().getCurrentContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getCurrentContext().getSystemService(Context.CLIPBOARD_SERVICE);
             clipboard.setPrimaryClip(ClipData.newPlainText("PoketChat Copy To Clipboard", text));
         }
     }
 
     public static void openApp(String packageName) {
-        Context context = MlInternal.getInstance().getCurrentContext();
+        Context context = getCurrentContext();
         PackageManager manager = context.getPackageManager();
         Intent intent = manager.getLaunchIntentForPackage(packageName);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -557,7 +557,7 @@ public class MlUtils {
     }
 
     public static void openDownloadPage(String downloadUrl) {
-        Context context = MlInternal.getInstance().getCurrentContext();
+        Context context = getCurrentContext();
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setData(Uri.parse(downloadUrl));
@@ -581,7 +581,7 @@ public class MlUtils {
     }
 
     public static void deleteInternalStorageFile(String path) {
-        Context context = MlInternal.getInstance().getCurrentContext();
+        Context context = getCurrentContext();
         context.deleteFile(path);
     }
 

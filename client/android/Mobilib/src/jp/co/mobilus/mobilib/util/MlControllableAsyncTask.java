@@ -17,7 +17,7 @@ public abstract class MlControllableAsyncTask extends MlAsyncTask {
         protected abstract MlControllableAsyncTask generate();
 
         public MlController execute() {
-            MlInternal.executeOnMainThread(new Runnable() {
+            MlUtils.executeOnMainThread(new Runnable() {
                 @Override
                 public void run() {
                     mAsyncTask = generate();

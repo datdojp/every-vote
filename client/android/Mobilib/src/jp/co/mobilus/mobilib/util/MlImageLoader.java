@@ -67,7 +67,7 @@ public abstract class MlImageLoader<T> {
     private static final Set<WeakReference<ImageView>> mLoadedImageViews = new HashSet<WeakReference<ImageView>>();
     private static void initCacheIfNeeded() {
         if (mStringPictureLruCache == null) {
-            Context context = MlInternal.getInstance() != null ? MlInternal.getInstance().getCurrentContext() : null;
+            Context context = MlUtils.getCurrentContext();
             int cacheSize = DEFAULT_CACHE_SIZE;
             if (context != null) {
                 ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);

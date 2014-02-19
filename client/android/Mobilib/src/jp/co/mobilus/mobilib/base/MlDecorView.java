@@ -1,7 +1,6 @@
 package jp.co.mobilus.mobilib.base;
 
 import jp.co.mobilus.mobilib.observer.MlNotificationCenter;
-import jp.co.mobilus.mobilib.util.MlInternal;
 import jp.co.mobilus.mobilib.util.MlUtils;
 import android.content.Context;
 import android.util.AttributeSet;
@@ -44,7 +43,7 @@ public class MlDecorView extends FrameLayout {
         super.onSizeChanged(w, h, oldw, oldh);
         if (mSizeChangedDelegate != null) mSizeChangedDelegate.onSizeChanged(w, h, oldw, oldh);
 
-        if (getContext() != MlInternal.getInstance().getCurrentContext()) return;
+        if (getContext() != MlUtils.getCurrentContext()) return;
 
         int maxVisibleSize = Math.max(w, h);
         int minVisibleSize = Math.min(w, h);

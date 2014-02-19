@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
-import jp.co.mobilus.mobilib.util.MlInternal;
 import jp.co.mobilus.mobilib.util.MlSSLCertificateUtils;
 import jp.co.mobilus.mobilib.util.MlUtils;
 
@@ -62,7 +61,7 @@ public abstract class MlApi {
             }
         }
 
-        MlInternal.executeOnAsyncThread(new Runnable() {
+        MlUtils.executeOnAsyncThread(new Runnable() {
             @Override
             public void run() {
 
@@ -159,7 +158,7 @@ public abstract class MlApi {
             final boolean isIgnoreSSLCertificate,
             final MlApiPostCallback callback ) {
 
-        MlInternal.executeOnAsyncThread(new Runnable() {
+        MlUtils.executeOnAsyncThread(new Runnable() {
             @Override
             public void run() {
 

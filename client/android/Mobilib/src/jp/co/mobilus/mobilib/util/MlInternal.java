@@ -16,76 +16,43 @@ import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 
-public class MlInternal {
+class MlInternal {
 
     private static Handler sMainThread = new Handler(Looper.getMainLooper());
     private static Map<String, Object> sCommonBundle = new ConcurrentHashMap<String, Object>();
 
     private static SharedPreferences sPrefs;
-    private Context mCurrentContext;
+    private static Context mCurrentContext;
 
-    private static MlInternal mInstance;
-    public static MlInternal getInstance() {
-        return mInstance;
-    }
-
-    private MlInternal(Context context) {
+    public static void init(Context context) {
         mCurrentContext = context;
     }
 
-    public static void createInstance(Context context) {
-        if (mInstance == null) {
-            mInstance = new MlInternal(context);
-        } else {
-            mInstance.mCurrentContext = context;
-        }
-    }
-
-    public static Handler getMainThread() {
+    public static Handler getMainThreadHandler() {
         return sMainThread;
     }
 
-    public SharedPreferences getPrefs() {
-        return getPrefs(getCurrentContext());
-    }
-
-    public static SharedPreferences getPrefs(Context context) {
+    public static SharedPreferences getPrefs() {
         if (sPrefs == null) {
-            sPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+            sPrefs = PreferenceManager.getDefaultSharedPreferences(getCurrentContext());
         }
         return sPrefs;
     }
 
-    public Context getCurrentContext() {
+    public static Context getCurrentContext() {
         return mCurrentContext;
     }
 
-    public void setCurrentContext(Context context) {
+    public static void setCurrentContext(Context context) {
         mCurrentContext = context;
     }
 
-    public Locale getLocale() {
+    public static Locale getLocale() {
         if (mCurrentContext != null) {
             return mCurrentContext.getResources().getConfiguration().locale;
         } else {
             return Locale.JAPAN;
         }
-    }
-
-    public int getAvatarWidth() {
-        return -1;
-    }
-
-    public int getAvatarHeight() {
-        return -1;
-    }
-
-    public int getRoomImageWidth() {
-        return -1;
-    }
-
-    public int getRoomImageHeight() {
-        return -1;
     }
 
     @SuppressLint("NewApi")
@@ -112,7 +79,7 @@ public class MlInternal {
 
     public static void executeOnMainThread(Runnable action) {
         Assert.assertNotNull(action);
-        Context context = MlInternal.getInstance().getCurrentContext();
+        Context context = getCurrentContext();
         if (context instanceof Activity) {
             ((Activity)context).runOnUiThread(action);
         } else {

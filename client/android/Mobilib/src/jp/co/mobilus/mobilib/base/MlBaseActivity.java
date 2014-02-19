@@ -1,29 +1,23 @@
 package jp.co.mobilus.mobilib.base;
 
-import jp.co.mobilus.mobilib.R;
 import jp.co.mobilus.mobilib.observer.MlNotificationCenter;
 import jp.co.mobilus.mobilib.observer.MlObserver;
-import jp.co.mobilus.mobilib.util.MlInternal;
 import jp.co.mobilus.mobilib.util.MlUtils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
-import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 
-public abstract class MlBaseActivity extends FragmentActivity implements MlObserver {
+public abstract class MlBaseActivity extends FragmentActivity {
 
     // current status
     private int mOrientation;
     
     // wrapper views
     private View mContentView;
-    private ViewGroup mInappPopupContainer;
     private MlDecorView mDecorView;
 
     // for background/foreground detecting
@@ -34,7 +28,6 @@ public abstract class MlBaseActivity extends FragmentActivity implements MlObser
             MlNotificationCenter.postNotification(this, MlNotificationCenter.Name.Common.GO_TO_BACKGROUND);
         }
     };
-    private static boolean sIsBackground;
     private static final long DEFAULT_MAX_ALLOWED_TRASITION_BETWEEN_ACTIVITY = 2000;
     protected long mMaxAllowedTrasitionBetweenActivity = DEFAULT_MAX_ALLOWED_TRASITION_BETWEEN_ACTIVITY;
 
@@ -42,38 +35,23 @@ public abstract class MlBaseActivity extends FragmentActivity implements MlObser
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Context context = MlInternal.getInstance().getCurrentContext();
+        Context context = MlUtils.getCurrentContext();
         if (context == null || !(context instanceof Activity)) {
-            MlInternal.getInstance().setCurrentContext(this);
+            MlUtils.setCurrentContext(this);
         }
         mOrientation = getResources().getConfiguration().orientation;
-
-        MlNotificationCenter.addObserver(this, MlNotificationCenter.Name.Common.GO_TO_BACKGROUND);
-        MlNotificationCenter.addObserver(this, MlNotificationCenter.Name.Common.GO_TO_FOREGROUND);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        MlInternal.getInstance().setCurrentContext(this);
+        MlUtils.setCurrentContext(this);
 
-        MlInternal.getMainThread().removeCallbacks(sBackgroundStatusCheckTask);
+        MlUtils.getMainThreadHandler().removeCallbacks(sBackgroundStatusCheckTask);
         long now = getNow();
         if (now - sLastOnPause > mMaxAllowedTrasitionBetweenActivity) {
             MlNotificationCenter.postNotification(this, MlNotificationCenter.Name.Common.GO_TO_FOREGROUND);
-        }
-
-        if (mInappPopupContainer == null) {
-            mInappPopupContainer = (ViewGroup) findViewById(R.id.ml_inapp_popup_container);
-
-            // do not allow touch event below pop-up background
-            mInappPopupContainer.setOnTouchListener(new OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    return true;
-                }
-            });
         }
     }
 
@@ -84,7 +62,7 @@ public abstract class MlBaseActivity extends FragmentActivity implements MlObser
         MlUtils.hideKeyboard();
 
         sLastOnPause = getNow();
-        MlInternal.getMainThread().postDelayed(sBackgroundStatusCheckTask, mMaxAllowedTrasitionBetweenActivity);
+        MlUtils.getMainThreadHandler().postDelayed(sBackgroundStatusCheckTask, mMaxAllowedTrasitionBetweenActivity);
     }
 
     @Override
@@ -104,7 +82,7 @@ public abstract class MlBaseActivity extends FragmentActivity implements MlObser
 
     private void waitForWindowOrientationReallyChanged(final Runnable callback) {
         if (MlUtils.isPortraitDisplay() != MlUtils.isPortraitWindow()) {
-            MlInternal.getMainThread().postDelayed(new Runnable() {
+            MlUtils.getMainThreadHandler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     waitForWindowOrientationReallyChanged(callback);
@@ -115,29 +93,12 @@ public abstract class MlBaseActivity extends FragmentActivity implements MlObser
         }
     }
 
-    @Override
-    public void onNotify(Object sender, String name, Object... args) {
-        if (MlNotificationCenter.Name.Common.GO_TO_FOREGROUND.equals(name)) {
-            if (isTopActivity()) {
-                sIsBackground = false;
-            }
-        } else if (MlNotificationCenter.Name.Common.GO_TO_BACKGROUND.equals(name)) {
-            if (isTopActivity()) {
-                sIsBackground = true;
-            }
-        }
-    }
-
     private long getNow() {
         return System.currentTimeMillis();
     }
 
-    public boolean isBackground() {
-        return sIsBackground;
-    }
-
     public boolean isTopActivity() {
-        return MlInternal.getInstance().getCurrentContext() == this;
+        return MlUtils.getCurrentContext() == this;
     }
 
     private View createDecorViewAndAddContent(int layoutResId, LayoutParams params) {
@@ -150,7 +111,7 @@ public abstract class MlBaseActivity extends FragmentActivity implements MlObser
             params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         }
         layout.setLayoutParams(params);
-        MlDecorView decorView = (MlDecorView) getLayoutInflater().inflate(R.layout.ml_decor_view, null);
+        MlDecorView decorView = new MlDecorView(MlUtils.getCurrentContext());
         decorView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         decorView.addView(layout);
         mContentView = layout;
@@ -178,33 +139,9 @@ public abstract class MlBaseActivity extends FragmentActivity implements MlObser
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        MlNotificationCenter.removeAllObserver(this);
-    }
-
-    public void showInAppPopup(final View content) {
-        MlInternal.executeOnMainThread(new Runnable() {
-            @Override
-            public void run() {
-                mInappPopupContainer.removeAllViews();
-                mInappPopupContainer.addView(content);
-                mInappPopupContainer.setVisibility(View.VISIBLE);
-                mInappPopupContainer.bringToFront();
-            }
-        });
-    }
-
-    public void hideInAppPopup() {
-        MlInternal.executeOnMainThread(new Runnable() {
-            @Override
-            public void run() {
-                mInappPopupContainer.removeAllViews();
-                mInappPopupContainer.setVisibility(View.GONE);
-            }
-        });
-    }
-
-    public boolean isInappPopupShown() {
-        return mInappPopupContainer.getVisibility() == View.VISIBLE;
+        if (this instanceof MlObserver) {
+            MlNotificationCenter.removeAllObserver((MlObserver) this);
+        }
     }
 
     public MlDecorView getDecorView() {
