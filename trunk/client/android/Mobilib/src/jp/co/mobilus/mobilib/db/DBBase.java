@@ -1,6 +1,6 @@
 package jp.co.mobilus.mobilib.db;
 
-import jp.co.mobilus.mobilib.util.MlInternal;
+import jp.co.mobilus.mobilib.util.MlUtils;
 import android.database.sqlite.SQLiteDatabase;
 
 /**
@@ -10,7 +10,7 @@ public abstract class DBBase {
     private static SQLiteDatabase sDb;
     protected static SQLiteDatabase getDatabase() {
         if (sDb == null) {
-            sDb = DBHelper.getInstance(MlInternal.getInstance().getCurrentContext()).getWritableDatabase();
+            sDb = DBHelper.getInstance(MlUtils.getCurrentContext()).getWritableDatabase();
         }
         return sDb;
     }
