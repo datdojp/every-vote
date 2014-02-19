@@ -1,8 +1,8 @@
 package com.datdvt.everyvote;
 
-import jp.co.mobilus.mobilib.base.MlBaseApplication;
+import jp.co.mobilus.mobilib.base.MblBaseApplication;
 
 
-public class EvApplication extends MlBaseApplication {
+public class EvApplication extends MblBaseApplication {
 
 }

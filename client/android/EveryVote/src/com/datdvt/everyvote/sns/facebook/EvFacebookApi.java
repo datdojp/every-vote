@@ -3,8 +3,7 @@ package com.datdvt.everyvote.sns.facebook;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import jp.co.mobilus.mobilib.api.MlApi;
-import jp.co.mobilus.mobilib.util.MlUtils;
+import jp.co.mobilus.mobilib.util.MblUtils;
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -16,7 +15,7 @@ import android.webkit.WebViewClient;
 import com.datdvt.everyvote.R;
 import com.datdvt.everyvote.util.EvConstants;
 
-public class EvFacebookApi extends MlApi {
+public class EvFacebookApi extends EvBaseApi {
 
     //    private static final String TAG = MlUtils.getTag(EvFacebookApi.class);
     private static final String OAUTH_REDIRECT_URI = "http://redirect.everyvote.com";
@@ -63,14 +62,14 @@ public class EvFacebookApi extends MlApi {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 if (!url.startsWith(OAUTH_REDIRECT_URI)) {
-                    MlUtils.showProgressDialog(R.string.loading);
+                    MblUtils.showProgressDialog(R.string.loading);
                 }
                 super.onPageStarted(view, url, favicon);
             }
             @Override
             public void onPageFinished(WebView view, String url) {
                 if (!url.startsWith(OAUTH_REDIRECT_URI)) {
-                    MlUtils.clearAllProgressDialogs();
+                    MblUtils.clearAllProgressDialogs();
                 }
                 super.onPageFinished(view, url);
             }
@@ -104,5 +103,4 @@ public class EvFacebookApi extends MlApi {
         public void onSuccess(String accessToken);
         public void onFailure();
     }
-
 }

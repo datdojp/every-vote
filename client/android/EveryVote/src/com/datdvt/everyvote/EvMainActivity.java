@@ -1,10 +1,10 @@
 package com.datdvt.everyvote;
 
+import jp.co.mobilus.mobilib.base.MblBaseActivity;
 import android.content.Intent;
 import android.os.Bundle;
-import jp.co.mobilus.mobilib.base.MlBaseActivity;
 
-public class EvMainActivity extends MlBaseActivity {
+public class EvMainActivity extends MblBaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
