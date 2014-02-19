@@ -1,12 +1,11 @@
 package jp.co.mobilus.mobilib.api;
 
+import jp.co.mobilus.mobilib.util.MlUtils;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import jp.co.mobilus.mobilib.db.DBBase;
-import jp.co.mobilus.mobilib.util.MlUtils;
 
-public class MlCache extends DBBase {
+class MlCache extends DBBase {
     private static final String TABLE = "ml_cache";
     private String mKey;
     private String mFileName;

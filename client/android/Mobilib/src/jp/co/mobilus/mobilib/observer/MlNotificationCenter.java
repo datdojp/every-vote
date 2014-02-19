@@ -4,8 +4,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import jp.co.mobilus.mobilib.util.MlWeakArrayList;
-import jp.co.mobilus.mobilib.util.MlWeakArrayList.MlWeakArrayListCallback;
+import jp.co.mobilus.mobilib.observer.MlWeakArrayList.MlWeakArrayListCallback;
 import android.os.Handler;
 
 public class MlNotificationCenter {

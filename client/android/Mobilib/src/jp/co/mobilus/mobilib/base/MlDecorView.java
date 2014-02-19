@@ -6,7 +6,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
-public class MlDecorView extends FrameLayout {
+class MlDecorView extends FrameLayout {
     private static final int KB_SHOWN = 1;
     private static final int KB_HIDDEN = 2;
 

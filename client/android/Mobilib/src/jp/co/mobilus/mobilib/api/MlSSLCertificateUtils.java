@@ -1,6 +1,5 @@
-package jp.co.mobilus.mobilib.util;
+package jp.co.mobilus.mobilib.api;
 
-import android.annotation.SuppressLint;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -32,7 +31,9 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 
-public class MlSSLCertificateUtils {
+import android.annotation.SuppressLint;
+
+class MlSSLCertificateUtils {
 
     @SuppressLint("DefaultLocale")
     public static boolean isHttpsUrl(String url) {

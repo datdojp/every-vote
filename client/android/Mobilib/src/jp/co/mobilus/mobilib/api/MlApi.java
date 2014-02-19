@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
-import jp.co.mobilus.mobilib.util.MlSSLCertificateUtils;
 import jp.co.mobilus.mobilib.util.MlUtils;
 
 import org.apache.http.Header;
