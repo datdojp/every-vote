@@ -206,15 +206,7 @@ public abstract class MblApi {
         public abstract void onFailure(int error, String errorMessage);
     }
 
-    private static final long _5_MIN = 1000l * 60l * 5l;
-    private static final long _1_HOUR = 1000l * 60l * 60l;
-    protected long getCacheDuration(String url, boolean isBinaryRequest) {
-        if (isBinaryRequest) {
-            return _1_HOUR;
-        } else {
-            return _5_MIN;
-        }
-    }
+    protected abstract long getCacheDuration(String url, boolean isBinaryRequest);
 
     private HttpClient getHttpClient(String url, boolean ignoreSSLCertificate) {
         if (MblSSLCertificateUtils.isHttpsUrl(url) && ignoreSSLCertificate) {
