@@ -5,18 +5,18 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.ListView;
 
-public class MlListViewWithScrollableItems extends ListView {
+public class MblListViewWithScrollableItems extends ListView {
     private Delegate mDelegate;
 
-    public MlListViewWithScrollableItems(Context context) {
+    public MblListViewWithScrollableItems(Context context) {
         super(context);
     }
 
-    public MlListViewWithScrollableItems(Context context, AttributeSet attrs) {
+    public MblListViewWithScrollableItems(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public MlListViewWithScrollableItems(Context context, AttributeSet attrs, int defStyle) {
+    public MblListViewWithScrollableItems(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
     

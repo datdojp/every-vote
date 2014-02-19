@@ -1,12 +1,12 @@
 package jp.co.mobilus.mobilib.base;
 
-import jp.co.mobilus.mobilib.observer.MlNotificationCenter;
-import jp.co.mobilus.mobilib.util.MlUtils;
+import jp.co.mobilus.mobilib.observer.MblNotificationCenter;
+import jp.co.mobilus.mobilib.util.MblUtils;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
-class MlDecorView extends FrameLayout {
+class MblDecorView extends FrameLayout {
     private static final int KB_SHOWN = 1;
     private static final int KB_HIDDEN = 2;
 
@@ -17,23 +17,23 @@ class MlDecorView extends FrameLayout {
     private MlDecorViewOnSizeChangedDelegate mSizeChangedDelegate;
 
 
-    public MlDecorView(Context context) {
+    public MblDecorView(Context context) {
         super(context);
         init();
     }
 
-    public MlDecorView(Context context, AttributeSet attrs) {
+    public MblDecorView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public MlDecorView(Context context, AttributeSet attrs, int defStyle) {
+    public MblDecorView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init();
     }
 
     private void init() {
-        int[] displaySizes = MlUtils.getDisplaySizes();
+        int[] displaySizes = MblUtils.getDisplaySizes();
         mMaxDisplaySize = Math.max(displaySizes[0], displaySizes[1]);
         mMinDisplaySize = Math.min(displaySizes[0], displaySizes[1]);
     }
@@ -43,15 +43,15 @@ class MlDecorView extends FrameLayout {
         super.onSizeChanged(w, h, oldw, oldh);
         if (mSizeChangedDelegate != null) mSizeChangedDelegate.onSizeChanged(w, h, oldw, oldh);
 
-        if (getContext() != MlUtils.getCurrentContext()) return;
+        if (getContext() != MblUtils.getCurrentContext()) return;
 
         int maxVisibleSize = Math.max(w, h);
         int minVisibleSize = Math.min(w, h);
 
         int maxDiff = Math.max(Math.abs(mMaxDisplaySize - maxVisibleSize), Math.abs(mMinDisplaySize - minVisibleSize));
-        int kbStt = maxDiff >= MlUtils.getMinKeyboardHeight() ? KB_SHOWN : KB_HIDDEN;
+        int kbStt = maxDiff >= MblUtils.getMinKeyboardHeight() ? KB_SHOWN : KB_HIDDEN;
         if (sKeyboardStatus != kbStt) {
-            MlNotificationCenter.postNotification(false, MlNotificationCenter.Name.Common.KEYBOARD_SHOW_OR_HIDE, kbStt == KB_SHOWN);
+            MblNotificationCenter.postNotification(false, MblNotificationCenter.Name.Common.KEYBOARD_SHOW_OR_HIDE, kbStt == KB_SHOWN);
             sKeyboardStatus = kbStt;
         }
     }

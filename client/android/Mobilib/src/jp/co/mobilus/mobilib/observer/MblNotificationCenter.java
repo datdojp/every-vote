@@ -4,10 +4,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import jp.co.mobilus.mobilib.observer.MlWeakArrayList.MlWeakArrayListCallback;
+import jp.co.mobilus.mobilib.observer.MblWeakArrayList.MlWeakArrayListCallback;
 import android.os.Handler;
 
-public class MlNotificationCenter {
+public class MblNotificationCenter {
     public static class Name {
         public static class Common {
             public static final String ORIENTATION_CHANGED              = Common.class + "orientation_changed";
@@ -18,18 +18,18 @@ public class MlNotificationCenter {
         }
     }
 
-    private static final Map<String, MlWeakArrayList<MlObserver>> mObserverMap = new ConcurrentHashMap<String, MlWeakArrayList<MlObserver>>();
+    private static final Map<String, MblWeakArrayList<MblObserver>> mObserverMap = new ConcurrentHashMap<String, MblWeakArrayList<MblObserver>>();
     private static final Handler sMainThread = new Handler();
 
-    private MlNotificationCenter() {}
+    private MblNotificationCenter() {}
 
-    public static void addObserver(MlObserver observer, String name) {
-        MlWeakArrayList<MlObserver> observers = null;
+    public static void addObserver(MblObserver observer, String name) {
+        MblWeakArrayList<MblObserver> observers = null;
 
         if(mObserverMap.containsKey(name)) {
             observers = mObserverMap.get(name);
         } else {
-            observers = new MlWeakArrayList<MlObserver>();
+            observers = new MblWeakArrayList<MblObserver>();
             mObserverMap.put(name, observers);
         }
         if(observers.contains(observer)) return;
@@ -37,10 +37,10 @@ public class MlNotificationCenter {
         observers.add(observer);
     }
 
-    public static void removeObserver(MlObserver observer, String name) {
+    public static void removeObserver(MblObserver observer, String name) {
         if(!mObserverMap.containsKey(name)) return;
 
-        MlWeakArrayList<MlObserver> observers = null;
+        MblWeakArrayList<MblObserver> observers = null;
 
         observers = mObserverMap.get(name);
         if(!observers.contains(observer)) return;
@@ -52,7 +52,7 @@ public class MlNotificationCenter {
         }
     }
 
-    public static void removeAllObserver(MlObserver observer) {
+    public static void removeAllObserver(MblObserver observer) {
         Set<String> keys = mObserverMap.keySet();
         for (String aKey : keys) {
             removeObserver(observer, aKey);
@@ -66,15 +66,15 @@ public class MlNotificationCenter {
     public static void postNotification(final Object sender, final boolean async, final String name, final Object... args) {
         if(!mObserverMap.containsKey(name)) return;
 
-        MlWeakArrayList<MlObserver> observers;
+        MblWeakArrayList<MblObserver> observers;
         if (async) {
             observers = mObserverMap.get(name);
         } else {
-            observers = new MlWeakArrayList<MlObserver>(mObserverMap.get(name));
+            observers = new MblWeakArrayList<MblObserver>(mObserverMap.get(name));
         }
-        observers.iterateWithCallback(new MlWeakArrayListCallback<MlObserver>() {
+        observers.iterateWithCallback(new MlWeakArrayListCallback<MblObserver>() {
             @Override
-            public void onInterate(final MlObserver observer) {
+            public void onInterate(final MblObserver observer) {
                 if (async) {
                     sMainThread.post(new Runnable() {
                         @Override

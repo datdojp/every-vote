@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
-import jp.co.mobilus.mobilib.util.MlUtils;
+import jp.co.mobilus.mobilib.util.MblUtils;
 
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
@@ -27,9 +27,9 @@ import org.apache.http.util.EntityUtils;
 import android.net.Uri;
 import android.util.Log;
 
-public abstract class MlApi {
+public abstract class MblApi {
 
-    private static final String TAG = MlApi.class.getSimpleName();
+    private static final String TAG = MblApi.class.getSimpleName();
 
     private final Map<String, Vector<MlApiGetCallback>> mGetRequestCallbacks = new ConcurrentHashMap<String, Vector<MlApiGetCallback>>();
 
@@ -60,20 +60,20 @@ public abstract class MlApi {
             }
         }
 
-        MlUtils.executeOnAsyncThread(new Runnable() {
+        MblUtils.executeOnAsyncThread(new Runnable() {
             @Override
             public void run() {
 
-                MlCache existingCache = null;
+                MblCache existingCache = null;
                 if (isCacheEnabled) {
-                    existingCache = MlCache.get(fullUrl);
+                    existingCache = MblCache.get(fullUrl);
                     boolean shouldReadFromCache =
                             existingCache != null &&
-                            (   !MlUtils.isNetworkConnected() ||
+                            (   !MblUtils.isNetworkConnected() ||
                                     System.currentTimeMillis() - existingCache.getDate() <= getCacheDuration(fullUrl, isBinaryRequest)    );
                     if (shouldReadFromCache) {
                         try {
-                            byte[] data = MlUtils.readCacheFile(existingCache.getFileName());
+                            byte[] data = MblUtils.readCacheFile(existingCache.getFileName());
                             if (data != null) {
                                 Vector<MlApiGetCallback> allCallbacksForFullUrl = mGetRequestCallbacks.get(fullUrl);
                                 synchronized (allCallbacksForFullUrl) {
@@ -157,7 +157,7 @@ public abstract class MlApi {
             final boolean isIgnoreSSLCertificate,
             final MlApiPostCallback callback ) {
 
-        MlUtils.executeOnAsyncThread(new Runnable() {
+        MblUtils.executeOnAsyncThread(new Runnable() {
             @Override
             public void run() {
 
@@ -167,7 +167,7 @@ public abstract class MlApi {
                     HttpContext httpContext = new BasicHttpContext();
                     HttpPost httpPost = new HttpPost(url);
 
-                    if (!MlUtils.isEmpty(params)) {
+                    if (!MblUtils.isEmpty(params)) {
                         List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
                         for (String key : params.keySet()) {
                             nameValuePairs.add(new BasicNameValuePair(key, params.get(key)));
@@ -217,34 +217,34 @@ public abstract class MlApi {
     }
 
     private HttpClient getHttpClient(String url, boolean ignoreSSLCertificate) {
-        if (MlSSLCertificateUtils.isHttpsUrl(url) && ignoreSSLCertificate) {
-            return MlSSLCertificateUtils.getHttpClientIgnoreSSLCertificate();
+        if (MblSSLCertificateUtils.isHttpsUrl(url) && ignoreSSLCertificate) {
+            return MblSSLCertificateUtils.getHttpClientIgnoreSSLCertificate();
         } else {
             return new DefaultHttpClient();
         }
     }
 
-    private void saveCache(MlCache existingCache, String fullUrl, byte[] data) {
+    private void saveCache(MblCache existingCache, String fullUrl, byte[] data) {
         try {
-            MlCache cacheToSave;
+            MblCache cacheToSave;
             if (existingCache == null) {
-                cacheToSave = new MlCache();
+                cacheToSave = new MblCache();
                 cacheToSave.setKey(fullUrl);
                 cacheToSave.setDate(System.currentTimeMillis());
-                MlCache.insert(cacheToSave);
+                MblCache.insert(cacheToSave);
             } else {
                 cacheToSave = existingCache;
                 cacheToSave.setDate(System.currentTimeMillis());
-                MlCache.update(cacheToSave);
+                MblCache.update(cacheToSave);
             }
-            MlUtils.saveCacheFile(data, cacheToSave.getFileName());
+            MblUtils.saveCacheFile(data, cacheToSave.getFileName());
         } catch (Exception e) {
             Log.e(TAG, "Failed to cache url: " + fullUrl, e);
         }
     }
 
     private String generateGetMethodFullUrl(String url, Map<String, String> params) {
-        if (!MlUtils.isEmpty(params)) {
+        if (!MblUtils.isEmpty(params)) {
             Uri.Builder builder = Uri.parse(url).buildUpon();
             for (String key : params.keySet()) {
                 builder.appendQueryParameter(key, params.get(key));
@@ -259,7 +259,7 @@ public abstract class MlApi {
 
         Header[] headers = null;
 
-        if (!MlUtils.isEmpty(headerParams)) {
+        if (!MblUtils.isEmpty(headerParams)) {
             headers = new Header[headerParams.keySet().size()];
             int i = 0;
             for (final String key : headerParams.keySet()) {

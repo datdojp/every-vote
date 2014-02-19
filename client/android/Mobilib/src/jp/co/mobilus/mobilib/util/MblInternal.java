@@ -16,7 +16,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 
-class MlInternal {
+class MblInternal {
 
     private static Handler sMainThread = new Handler(Looper.getMainLooper());
     private static Map<String, Object> sCommonBundle = new ConcurrentHashMap<String, Object>();
@@ -61,7 +61,7 @@ class MlInternal {
         executeOnMainThread(new Runnable() {
             @Override
             public void run() {
-                MlAsyncTask task = new MlAsyncTask() {
+                MblAsyncTask task = new MblAsyncTask() {
                     @Override
                     protected Void doInBackground(Void... params) {
                         action.run();
@@ -83,7 +83,7 @@ class MlInternal {
         if (context instanceof Activity) {
             ((Activity)context).runOnUiThread(action);
         } else {
-            if (MlUtils.isMainThread()) {
+            if (MblUtils.isMainThread()) {
                 action.run();
             } else {
                 sMainThread.post(action);

@@ -8,9 +8,9 @@ import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
 
-public abstract class MlDataLoader<T> {
+public abstract class MblDataLoader<T> {
     @SuppressWarnings("unused")
-    private static final String TAG = MlUtils.getTag(MlDataLoader.class);
+    private static final String TAG = MblUtils.getTag(MblDataLoader.class);
 
     public static interface DataRetrievedCallback<T> {
         public void onRetrieved(T data);
@@ -43,10 +43,10 @@ public abstract class MlDataLoader<T> {
     /**
      * constructors
      */
-    public MlDataLoader() {
+    public MblDataLoader() {
         this(LoadOrder.FIRST_TO_LAST);
     }
-    public MlDataLoader(LoadOrder loadOrder) {
+    public MblDataLoader(LoadOrder loadOrder) {
         mLoadOrder = loadOrder;
     }
 

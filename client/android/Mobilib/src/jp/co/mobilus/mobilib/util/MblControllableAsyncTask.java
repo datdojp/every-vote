@@ -1,7 +1,7 @@
 package jp.co.mobilus.mobilib.util;
 
 
-public abstract class MlControllableAsyncTask extends MlAsyncTask {
+public abstract class MblControllableAsyncTask extends MblAsyncTask {
     
     public void cancel() {
         super.cancel(true);
@@ -12,12 +12,12 @@ public abstract class MlControllableAsyncTask extends MlAsyncTask {
 
     public abstract static class MlController {
 
-        private MlControllableAsyncTask mAsyncTask;
+        private MblControllableAsyncTask mAsyncTask;
 
-        protected abstract MlControllableAsyncTask generate();
+        protected abstract MblControllableAsyncTask generate();
 
         public MlController execute() {
-            MlUtils.executeOnMainThread(new Runnable() {
+            MblUtils.executeOnMainThread(new Runnable() {
                 @Override
                 public void run() {
                     mAsyncTask = generate();
