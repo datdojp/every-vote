@@ -1,6 +1,6 @@
 package jp.co.mobilus.mobilib.api;
 
-import jp.co.mobilus.mobilib.api.MlCache;
+import jp.co.mobilus.mobilib.api.MblCache;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -36,10 +36,10 @@ class DBHelper extends SQLiteOpenHelper {
     }
 
     public static void createTables(SQLiteDatabase db) {
-        MlCache.createTable(db);
+        MblCache.createTable(db);
     }
 
     public static void dropTables(SQLiteDatabase db) {
-        MlCache.dropTable(db);
+        MblCache.dropTable(db);
     }
 }

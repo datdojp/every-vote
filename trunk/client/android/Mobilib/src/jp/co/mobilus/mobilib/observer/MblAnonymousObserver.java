@@ -3,18 +3,18 @@ package jp.co.mobilus.mobilib.observer;
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class MlAnonymousObserver implements MlObserver {
+public abstract class MblAnonymousObserver implements MblObserver {
 
-    private static final Set<MlAnonymousObserver> sAnonymousObservers = new HashSet<MlAnonymousObserver>();
+    private static final Set<MblAnonymousObserver> sAnonymousObservers = new HashSet<MblAnonymousObserver>();
 
-    public MlAnonymousObserver() {
+    public MblAnonymousObserver() {
         synchronized (sAnonymousObservers) {
             sAnonymousObservers.add(this);
         }
     }
 
     public void terminate() {
-        MlNotificationCenter.removeAllObserver(this);
+        MblNotificationCenter.removeAllObserver(this);
         synchronized (sAnonymousObservers) {
             sAnonymousObservers.remove(this);
         }

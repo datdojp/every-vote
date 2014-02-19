@@ -1,11 +1,11 @@
 package jp.co.mobilus.mobilib.api;
 
-import jp.co.mobilus.mobilib.util.MlUtils;
+import jp.co.mobilus.mobilib.util.MblUtils;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-class MlCache extends DBBase {
+class MblCache extends DBBase {
     private static final String TABLE = "ml_cache";
     private String mKey;
     private String mFileName;
@@ -27,30 +27,30 @@ class MlCache extends DBBase {
         getDatabase().delete(TABLE, null, null);
     }
 
-    public static boolean insert(MlCache cache) {
+    public static boolean insert(MblCache cache) {
         ContentValues values = new ContentValues();
         values.put("key", cache.getKey());
         values.put("date", cache.getDate());
         return -1 != getDatabase().insert(TABLE, null, values);
     }
 
-    public static boolean update(MlCache cache) {
+    public static boolean update(MblCache cache) {
         ContentValues values = new ContentValues();
         values.put("date", cache.getDate());
         return 0 != getDatabase().update(TABLE, values, "key = ?", new String[] { cache.getKey() });
     }
 
-    public static MlCache get(String key) {
+    public static MblCache get(String key) {
         Cursor cur = getDatabase().query(
                 TABLE,
                 new String[] {"date"}, 
                 "key = ?",
                 new String[] { key },
                 null, null, null);
-        MlCache ret = null;
+        MblCache ret = null;
 
         if (cur.moveToNext()) {
-            ret = new MlCache();
+            ret = new MblCache();
             ret.setKey(key);
             ret.setDate(cur.getLong(0));
         }
@@ -70,7 +70,7 @@ class MlCache extends DBBase {
     }
     public void setKey(String mKey) {
         this.mKey = mKey;
-        this.mFileName = MlUtils.md5(mKey);
+        this.mFileName = MblUtils.md5(mKey);
     }
     public long getDate() {
         return mDate;

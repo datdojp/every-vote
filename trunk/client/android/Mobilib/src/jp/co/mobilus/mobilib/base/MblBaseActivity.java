@@ -1,8 +1,8 @@
 package jp.co.mobilus.mobilib.base;
 
-import jp.co.mobilus.mobilib.observer.MlNotificationCenter;
-import jp.co.mobilus.mobilib.observer.MlObserver;
-import jp.co.mobilus.mobilib.util.MlUtils;
+import jp.co.mobilus.mobilib.observer.MblNotificationCenter;
+import jp.co.mobilus.mobilib.observer.MblObserver;
+import jp.co.mobilus.mobilib.util.MblUtils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -11,21 +11,21 @@ import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 
-public abstract class MlBaseActivity extends FragmentActivity {
+public abstract class MblBaseActivity extends FragmentActivity {
 
     // current status
     private int mOrientation;
     
     // wrapper views
     private View mContentView;
-    private MlDecorView mDecorView;
+    private MblDecorView mDecorView;
 
     // for background/foreground detecting
     private static long sLastOnPause = 0;
     private static Runnable sBackgroundStatusCheckTask = new Runnable() {
         @Override
         public void run() {
-            MlNotificationCenter.postNotification(this, MlNotificationCenter.Name.Common.GO_TO_BACKGROUND);
+            MblNotificationCenter.postNotification(this, MblNotificationCenter.Name.Common.GO_TO_BACKGROUND);
         }
     };
     private static final long DEFAULT_MAX_ALLOWED_TRASITION_BETWEEN_ACTIVITY = 2000;
@@ -35,9 +35,9 @@ public abstract class MlBaseActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Context context = MlUtils.getCurrentContext();
+        Context context = MblUtils.getCurrentContext();
         if (context == null || !(context instanceof Activity)) {
-            MlUtils.setCurrentContext(this);
+            MblUtils.setCurrentContext(this);
         }
         mOrientation = getResources().getConfiguration().orientation;
     }
@@ -46,12 +46,12 @@ public abstract class MlBaseActivity extends FragmentActivity {
     protected void onResume() {
         super.onResume();
 
-        MlUtils.setCurrentContext(this);
+        MblUtils.setCurrentContext(this);
 
-        MlUtils.getMainThreadHandler().removeCallbacks(sBackgroundStatusCheckTask);
+        MblUtils.getMainThreadHandler().removeCallbacks(sBackgroundStatusCheckTask);
         long now = getNow();
         if (now - sLastOnPause > mMaxAllowedTrasitionBetweenActivity) {
-            MlNotificationCenter.postNotification(this, MlNotificationCenter.Name.Common.GO_TO_FOREGROUND);
+            MblNotificationCenter.postNotification(this, MblNotificationCenter.Name.Common.GO_TO_FOREGROUND);
         }
     }
 
@@ -59,10 +59,10 @@ public abstract class MlBaseActivity extends FragmentActivity {
     protected void onPause() {
         super.onPause();
 
-        MlUtils.hideKeyboard();
+        MblUtils.hideKeyboard();
 
         sLastOnPause = getNow();
-        MlUtils.getMainThreadHandler().postDelayed(sBackgroundStatusCheckTask, mMaxAllowedTrasitionBetweenActivity);
+        MblUtils.getMainThreadHandler().postDelayed(sBackgroundStatusCheckTask, mMaxAllowedTrasitionBetweenActivity);
     }
 
     @Override
@@ -74,15 +74,15 @@ public abstract class MlBaseActivity extends FragmentActivity {
             waitForWindowOrientationReallyChanged(new Runnable() {
                 @Override
                 public void run() {
-                    MlNotificationCenter.postNotification(this, MlNotificationCenter.Name.Common.ORIENTATION_CHANGED);
+                    MblNotificationCenter.postNotification(this, MblNotificationCenter.Name.Common.ORIENTATION_CHANGED);
                 }
             });
         }
     }
 
     private void waitForWindowOrientationReallyChanged(final Runnable callback) {
-        if (MlUtils.isPortraitDisplay() != MlUtils.isPortraitWindow()) {
-            MlUtils.getMainThreadHandler().postDelayed(new Runnable() {
+        if (MblUtils.isPortraitDisplay() != MblUtils.isPortraitWindow()) {
+            MblUtils.getMainThreadHandler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     waitForWindowOrientationReallyChanged(callback);
@@ -98,7 +98,7 @@ public abstract class MlBaseActivity extends FragmentActivity {
     }
 
     public boolean isTopActivity() {
-        return MlUtils.getCurrentContext() == this;
+        return MblUtils.getCurrentContext() == this;
     }
 
     private View createDecorViewAndAddContent(int layoutResId, LayoutParams params) {
@@ -111,7 +111,7 @@ public abstract class MlBaseActivity extends FragmentActivity {
             params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         }
         layout.setLayoutParams(params);
-        MlDecorView decorView = new MlDecorView(MlUtils.getCurrentContext());
+        MblDecorView decorView = new MblDecorView(MblUtils.getCurrentContext());
         decorView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         decorView.addView(layout);
         mContentView = layout;
@@ -139,12 +139,12 @@ public abstract class MlBaseActivity extends FragmentActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (this instanceof MlObserver) {
-            MlNotificationCenter.removeAllObserver((MlObserver) this);
+        if (this instanceof MblObserver) {
+            MblNotificationCenter.removeAllObserver((MblObserver) this);
         }
     }
 
-    public MlDecorView getDecorView() {
+    public MblDecorView getDecorView() {
         return mDecorView;
     }
     

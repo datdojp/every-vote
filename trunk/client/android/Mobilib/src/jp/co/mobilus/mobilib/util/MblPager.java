@@ -7,7 +7,7 @@ import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.ListView;
 
-public abstract class MlPager<T> {
+public abstract class MblPager<T> {
     /**
      * instance variables
      */
@@ -75,19 +75,19 @@ public abstract class MlPager<T> {
     /**
      * constructors
      */
-    public MlPager(int offset, int limitPerLoad, MlPagerLoadOrder loadOrder) {
+    public MblPager(int offset, int limitPerLoad, MlPagerLoadOrder loadOrder) {
         this(offset, limitPerLoad);
         mLoadOrder = loadOrder;
     }
 
-    public MlPager(int offset, int limitPerLoad) {
+    public MblPager(int offset, int limitPerLoad) {
         mOffSet = offset;
         mLimitPerLoad = limitPerLoad;
 
         getListView().setOnScrollListener(new OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
-                MlPager.this.onScrollStateChanged(view, scrollState);
+                MblPager.this.onScrollStateChanged(view, scrollState);
             }
 
             @Override
@@ -110,7 +110,7 @@ public abstract class MlPager<T> {
                     }
                 }
                 mPreviousFirstVisibleItem = firstVisibleItem;
-                MlPager.this.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
+                MblPager.this.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
             }
         });
     }

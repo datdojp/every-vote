@@ -33,7 +33,7 @@ import org.apache.http.protocol.HTTP;
 
 import android.annotation.SuppressLint;
 
-class MlSSLCertificateUtils {
+class MblSSLCertificateUtils {
 
     @SuppressLint("DefaultLocale")
     public static boolean isHttpsUrl(String url) {

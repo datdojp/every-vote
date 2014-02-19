@@ -6,12 +6,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-class MlWeakArrayList<T> {
+class MblWeakArrayList<T> {
     private List<WeakReference<T>> mData = new Vector<WeakReference<T>>();
 
-    public MlWeakArrayList() {}
+    public MblWeakArrayList() {}
 
-    public MlWeakArrayList(MlWeakArrayList<T> other) {
+    public MblWeakArrayList(MblWeakArrayList<T> other) {
         mData.clear();
         mData.addAll(other.mData);
     }
