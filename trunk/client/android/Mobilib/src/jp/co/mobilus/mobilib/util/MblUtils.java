@@ -57,6 +57,7 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
+import android.widget.ListView;
 
 public class MblUtils extends MblInternal {
     private static final String TAG = getTag(MblUtils.class);
@@ -632,5 +633,21 @@ public class MblUtils extends MblInternal {
             }
         }
         return bm;
+    }
+
+    public static void scrollListViewToBottom(final ListView listView) {
+        if (listView == null || listView.getAdapter() == null) {
+            return;
+        }
+
+        executeOnMainThread(new Runnable() {
+            @Override
+            public void run() {
+                int count = listView.getAdapter().getCount();
+                if (count > 0) {
+                    listView.setSelectionFromTop(count, -listView.getHeight());
+                }
+            }
+        });
     }
 }
