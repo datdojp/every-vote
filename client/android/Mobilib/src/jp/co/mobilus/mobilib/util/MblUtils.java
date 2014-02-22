@@ -58,6 +58,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class MblUtils extends MblInternal {
     private static final String TAG = getTag(MblUtils.class);
@@ -418,6 +419,27 @@ public class MblUtils extends MblInternal {
                     }
                     sProgressDialog = null;
                 }
+            }
+        });
+    }
+
+    public static void showToast(final String text, final int duration) {
+        executeOnMainThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getCurrentContext(), text, duration).show();
+            }
+        });
+    }
+
+    public static void showToast(final int resId, final int duration) {
+        executeOnMainThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(
+                        getCurrentContext(),
+                        getCurrentContext().getString(resId),
+                        duration).show();
             }
         });
     }
