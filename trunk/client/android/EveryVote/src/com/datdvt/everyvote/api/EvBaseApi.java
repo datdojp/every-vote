@@ -1,4 +1,4 @@
-package com.datdvt.everyvote.sns.facebook;
+package com.datdvt.everyvote.api;
 
 import jp.co.mobilus.mobilib.api.MblApi;
 
@@ -12,5 +12,13 @@ public class EvBaseApi extends MblApi {
         } else {
             return _5_MIN;
         }
+    }
+    
+    protected static interface EvApiCallback {
+        public void onError();
+    }
+
+    public static interface EvSimpleCallback extends EvApiCallback {
+        public void onSuccess();
     }
 }

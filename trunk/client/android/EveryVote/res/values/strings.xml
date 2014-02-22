@@ -4,5 +4,13 @@
     <string name="app_name">EveryVote</string>
     <string name="loading">Loading...</string>
     <string name="login_facebook">Login facebook</string>
+    <string name="requests">Requests</string>
+    <string name="friends">Friends</string>
+    <string name="sns_accounts">SNS Accounts</string>
+    <string name="logout">Logout</string>
+    <string name="login_facebook_failed">Failed to log in Facebook. Please try again later.</string>
+    <string name="login_everyvote_server">Logging in Every-Vote server...</string>
+    <string name="login_everyvote_server_failed">Failed to log in Every-Vote server. Please try again later.</string>
+    <string name="add_new_sns_account">Add new SNS account</string>
 
 </resources>
