@@ -8,6 +8,5 @@ class Request
   field :expires_in, type: Integer # in seconds
 
   # relations
-  belongs_to :sender, class_name: User.name, inverse_of: :requests
-  has_and_belongs_to_many :target_users, class_name: User.name, inverse_of: :in_requests
+  embedded_in :user, class_name: User.name, inverse_of: :requests
 end
