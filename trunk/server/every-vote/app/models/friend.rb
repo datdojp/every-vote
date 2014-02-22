@@ -1,11 +1,8 @@
 class Friend
   include Mongoid::Document
 
-  # data
-  field :service, type: String
-  
-  # relations
-  belongs_to :friend_user, class_name: User.name, inverse_of: :in_friends 
-  belongs_to :user, class_name: User.name, inverse_of: :friends
-  
+  field :sns_id, type: String
+  field :sns_type, type: String
+
+  embedded_in :friend_list, class_name: FriendList.name, inverse_of: :friends
 end

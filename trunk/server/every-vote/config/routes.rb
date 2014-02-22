@@ -1,4 +1,8 @@
 EveryVote::Application.routes.draw do
+  scope "api/v1" do
+    post "login" => "api#login", format: :json
+  end
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
