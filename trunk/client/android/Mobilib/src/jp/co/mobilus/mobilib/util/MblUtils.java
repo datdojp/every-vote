@@ -47,6 +47,8 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Looper;
+import android.provider.Settings.Secure;
+import android.telephony.TelephonyManager;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Log;
@@ -671,5 +673,29 @@ public class MblUtils extends MblInternal {
                 }
             }
         });
+    }
+
+    @SuppressLint("NewApi")
+    public static String generateDeviceId() {
+        Context context = MblUtils.getCurrentContext();
+        StringBuilder builder = new StringBuilder();
+
+        // android id
+        String androidId = Secure.getString(context.getContentResolver(), Secure.ANDROID_ID); 
+        if (!TextUtils.isEmpty(androidId)) builder.append(androidId);
+
+        // serial
+        if (Build.VERSION.SDK_INT >= 9) {
+            String serial = Build.SERIAL;
+            if (!TextUtils.isEmpty(serial) && !Build.UNKNOWN.equals(serial)) builder.append(serial);
+        }
+
+        // phone device id
+        TelephonyManager telephonyManager = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
+        String deviceId = telephonyManager.getDeviceId();
+        if (!TextUtils.isEmpty(deviceId)) builder.append(deviceId);
+
+        // combine & hast
+        return md5(builder.toString());
     }
 }
