@@ -1,6 +1,7 @@
 package jp.co.mobilus.mobilib.api;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.InputStreamBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
@@ -27,6 +31,7 @@ import org.apache.http.util.EntityUtils;
 import android.net.Uri;
 import android.util.Log;
 
+@SuppressWarnings("deprecation")
 public abstract class MblApi {
 
     private static final String TAG = MblApi.class.getSimpleName();
@@ -152,10 +157,24 @@ public abstract class MblApi {
 
     public void post(
             final String url,
-            final Map<String, String> params,
+            final Map<String, Object> params,
             final Map<String, String> headerParams,
             final boolean isIgnoreSSLCertificate,
-            final MlApiPostCallback callback ) {
+            final MlApiPostCallback callback ) throws MblApiInvalidParam {
+
+        boolean isMultipart = false;
+        if (!MblUtils.isEmpty(params)) {
+            for (String key : params.keySet()) {
+                Object val = params.get(key);
+                if (val instanceof InputStream) {
+                    isMultipart = true;
+                }
+                if (!(val instanceof InputStream) && !(val instanceof String)) {
+                    throw new MblApiInvalidParam("params must be String or InputStream");
+                }
+            }
+        }
+        final boolean fIsMultipart = isMultipart;
 
         MblUtils.executeOnAsyncThread(new Runnable() {
             @Override
@@ -168,11 +187,24 @@ public abstract class MblApi {
                     HttpPost httpPost = new HttpPost(url);
 
                     if (!MblUtils.isEmpty(params)) {
-                        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-                        for (String key : params.keySet()) {
-                            nameValuePairs.add(new BasicNameValuePair(key, params.get(key)));
+                        if (fIsMultipart) {
+                            MultipartEntity multipartContent = new MultipartEntity();
+                            for (String key : params.keySet()) {
+                                Object val = params.get(key);
+                                if (val instanceof InputStream) {
+                                    multipartContent.addPart(key, new InputStreamBody((InputStream)val, key));
+                                } else if (val instanceof String){
+                                    multipartContent.addPart(key, new StringBody((String)val));
+                                }
+                            }
+                            httpPost.setEntity(multipartContent);
+                        } else {
+                            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+                            for (String key : params.keySet()) {
+                                nameValuePairs.add(new BasicNameValuePair(key, (String)params.get(key)));
+                            }
+                            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
                         }
-                        httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
                     }
 
                     httpPost.setHeaders(getHeaderArray(headerParams));
@@ -275,5 +307,19 @@ public abstract class MblApi {
         }
 
         return headers;
+    }
+
+    @SuppressWarnings("serial")
+    public static abstract class MblApiException extends Exception {
+        public MblApiException(String msg) {
+            super(msg);
+        }
+    }
+
+    @SuppressWarnings("serial")
+    public static class MblApiInvalidParam extends MblApiException {
+        public MblApiInvalidParam(String msg) {
+            super(msg);
+        }
     }
 }
