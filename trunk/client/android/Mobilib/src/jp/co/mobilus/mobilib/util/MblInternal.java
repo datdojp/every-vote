@@ -58,7 +58,7 @@ class MblInternal {
     @SuppressLint("NewApi")
     public static void executeOnAsyncThread(final Runnable action) {
         Assert.assertNotNull(action);
-        if (MblUtils.isMainThread()) {
+        if (!MblUtils.isMainThread()) {
             action.run();
         } else {
             executeOnMainThread(new Runnable() {
