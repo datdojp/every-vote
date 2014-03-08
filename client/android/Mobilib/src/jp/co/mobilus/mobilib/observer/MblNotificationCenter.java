@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import jp.co.mobilus.mobilib.observer.MblWeakArrayList.MlWeakArrayListCallback;
 import android.os.Handler;
+import android.os.Looper;
 
 public class MblNotificationCenter {
     public static class Name {
@@ -19,7 +20,7 @@ public class MblNotificationCenter {
     }
 
     private static final Map<String, MblWeakArrayList<MblObserver>> mObserverMap = new ConcurrentHashMap<String, MblWeakArrayList<MblObserver>>();
-    private static final Handler sMainThread = new Handler();
+    private static final Handler sMainThread = new Handler(Looper.getMainLooper());
 
     private MblNotificationCenter() {}
 
