@@ -60,38 +60,38 @@ class MblInternal {
         Assert.assertNotNull(action);
         if (!MblUtils.isMainThread()) {
             action.run();
-        } else {
-            executeOnMainThread(new Runnable() {
-                @Override
-                public void run() {
-                    MblAsyncTask task = new MblAsyncTask() {
-                        @Override
-                        protected Void doInBackground(Void... params) {
-                            action.run();
-                            return null;
-                        }
-                    };
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                    } else {
-                        task.execute();
-                    }
-                }
-            });
+            return;
         }
+        executeOnMainThread(new Runnable() {
+            @Override
+            public void run() {
+                MblAsyncTask task = new MblAsyncTask() {
+                    @Override
+                    protected Void doInBackground(Void... params) {
+                        action.run();
+                        return null;
+                    }
+                };
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                } else {
+                    task.execute();
+                }
+            }
+        });
     }
 
     public static void executeOnMainThread(Runnable action) {
         Assert.assertNotNull(action);
+        if (MblUtils.isMainThread()) {
+            action.run();
+            return;
+        }
         Context context = getCurrentContext();
-        if (context instanceof Activity) {
+        if (context != null && context instanceof Activity) {
             ((Activity)context).runOnUiThread(action);
         } else {
-            if (MblUtils.isMainThread()) {
-                action.run();
-            } else {
-                sMainThread.post(action);
-            }
+            sMainThread.post(action);
         }
     }
 
