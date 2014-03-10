@@ -664,7 +664,7 @@ public class MblUtils extends MblInternal {
             return;
         }
 
-        executeOnMainThread(new Runnable() {
+        final Runnable action = new Runnable() {
             @Override
             public void run() {
                 int count = listView.getAdapter().getCount();
@@ -672,7 +672,19 @@ public class MblUtils extends MblInternal {
                     listView.setSelectionFromTop(count, -listView.getHeight());
                 }
             }
-        });
+        };
+
+        if (listView.getHeight() > 0) {
+            executeOnMainThread(action);
+        } else {
+            listView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    removeOnGlobalLayoutListener(listView, this);
+                    action.run();
+                }
+            });
+        }
     }
 
     @SuppressLint("NewApi")
