@@ -1,7 +1,8 @@
 package jp.co.mobilus.mobilib.base;
 
-import jp.co.mobilus.mobilib.observer.MblNotificationCenter;
-import jp.co.mobilus.mobilib.observer.MblObserver;
+import jp.co.mobilus.mobilib.event.MblCommonEvents;
+import jp.co.mobilus.mobilib.event.MblEventCenter;
+import jp.co.mobilus.mobilib.event.MblEventListener;
 import jp.co.mobilus.mobilib.util.MblUtils;
 import android.app.Activity;
 import android.content.Context;
@@ -25,7 +26,7 @@ public abstract class MblBaseActivity extends FragmentActivity {
     private static Runnable sBackgroundStatusCheckTask = new Runnable() {
         @Override
         public void run() {
-            MblNotificationCenter.postNotification(this, MblNotificationCenter.Name.Common.GO_TO_BACKGROUND);
+            MblEventCenter.postNotification(this, MblCommonEvents.GO_TO_BACKGROUND);
         }
     };
     private static final long DEFAULT_MAX_ALLOWED_TRASITION_BETWEEN_ACTIVITY = 2000;
@@ -51,7 +52,7 @@ public abstract class MblBaseActivity extends FragmentActivity {
         MblUtils.getMainThreadHandler().removeCallbacks(sBackgroundStatusCheckTask);
         long now = getNow();
         if (now - sLastOnPause > mMaxAllowedTrasitionBetweenActivity) {
-            MblNotificationCenter.postNotification(this, MblNotificationCenter.Name.Common.GO_TO_FOREGROUND);
+            MblEventCenter.postNotification(this, MblCommonEvents.GO_TO_FOREGROUND);
         }
     }
 
@@ -74,7 +75,7 @@ public abstract class MblBaseActivity extends FragmentActivity {
             waitForWindowOrientationReallyChanged(new Runnable() {
                 @Override
                 public void run() {
-                    MblNotificationCenter.postNotification(this, MblNotificationCenter.Name.Common.ORIENTATION_CHANGED);
+                    MblEventCenter.postNotification(this, MblCommonEvents.ORIENTATION_CHANGED);
                 }
             });
         }
@@ -139,8 +140,8 @@ public abstract class MblBaseActivity extends FragmentActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (this instanceof MblObserver) {
-            MblNotificationCenter.removeAllObserver((MblObserver) this);
+        if (this instanceof MblEventListener) {
+            MblEventCenter.removeAllObserver((MblEventListener) this);
         }
     }
 
