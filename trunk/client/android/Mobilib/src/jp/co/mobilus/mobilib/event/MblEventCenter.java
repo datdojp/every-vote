@@ -70,11 +70,11 @@ public class MblEventCenter {
                     sMainThread.post(new Runnable() {
                         @Override
                         public void run() {
-                            observer.onNotify(sender, name, args);
+                            observer.onEvent(sender, name, args);
                         }
                     });
                 } else {
-                    observer.onNotify(sender, name, args);
+                    observer.onEvent(sender, name, args);
                 }
             }
         });
