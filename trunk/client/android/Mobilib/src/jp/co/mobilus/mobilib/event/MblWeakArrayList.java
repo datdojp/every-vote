@@ -1,4 +1,4 @@
-package jp.co.mobilus.mobilib.observer;
+package jp.co.mobilus.mobilib.event;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;

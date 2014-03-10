@@ -1,6 +1,7 @@
 package jp.co.mobilus.mobilib.base;
 
-import jp.co.mobilus.mobilib.observer.MblNotificationCenter;
+import jp.co.mobilus.mobilib.event.MblCommonEvents;
+import jp.co.mobilus.mobilib.event.MblEventCenter;
 import jp.co.mobilus.mobilib.util.MblUtils;
 import android.content.Context;
 import android.util.AttributeSet;
@@ -51,7 +52,7 @@ class MblDecorView extends FrameLayout {
         int maxDiff = Math.max(Math.abs(mMaxDisplaySize - maxVisibleSize), Math.abs(mMinDisplaySize - minVisibleSize));
         int kbStt = maxDiff >= MblUtils.getMinKeyboardHeight() ? KB_SHOWN : KB_HIDDEN;
         if (sKeyboardStatus != kbStt) {
-            MblNotificationCenter.postNotification(false, MblNotificationCenter.Name.Common.KEYBOARD_SHOW_OR_HIDE, kbStt == KB_SHOWN);
+            MblEventCenter.postNotification(false, MblCommonEvents.KEYBOARD_SHOW_OR_HIDE, kbStt == KB_SHOWN);
             sKeyboardStatus = kbStt;
         }
     }

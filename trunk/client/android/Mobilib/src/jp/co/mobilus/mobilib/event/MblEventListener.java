@@ -1,6 +1,6 @@
-package jp.co.mobilus.mobilib.observer;
+package jp.co.mobilus.mobilib.event;
 
 
-public interface MblObserver {
+public interface MblEventListener {
     public void onNotify(Object sender, String name, Object... args);
 }

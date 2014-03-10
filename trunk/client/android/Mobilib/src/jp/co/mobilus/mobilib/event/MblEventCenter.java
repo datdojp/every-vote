@@ -1,36 +1,26 @@
-package jp.co.mobilus.mobilib.observer;
+package jp.co.mobilus.mobilib.event;
 
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import jp.co.mobilus.mobilib.observer.MblWeakArrayList.MlWeakArrayListCallback;
+import jp.co.mobilus.mobilib.event.MblWeakArrayList.MlWeakArrayListCallback;
 import android.os.Handler;
 import android.os.Looper;
 
-public class MblNotificationCenter {
-    public static class Name {
-        public static class Common {
-            public static final String ORIENTATION_CHANGED              = Common.class + "orientation_changed";
-            public static final String NETWORK_STATUS_CHANGED           = Common.class + "network_status_changed";
-            public static final String KEYBOARD_SHOW_OR_HIDE            = Common.class + "keyboard_show_or_hide";
-            public static final String GO_TO_BACKGROUND                 = Common.class + "go_to_background";
-            public static final String GO_TO_FOREGROUND                 = Common.class + "go_to_foreground";
-        }
-    }
-
-    private static final Map<String, MblWeakArrayList<MblObserver>> mObserverMap = new ConcurrentHashMap<String, MblWeakArrayList<MblObserver>>();
+public class MblEventCenter {
+    private static final Map<String, MblWeakArrayList<MblEventListener>> mObserverMap = new ConcurrentHashMap<String, MblWeakArrayList<MblEventListener>>();
     private static final Handler sMainThread = new Handler(Looper.getMainLooper());
 
-    private MblNotificationCenter() {}
+    private MblEventCenter() {}
 
-    public static void addObserver(MblObserver observer, String name) {
-        MblWeakArrayList<MblObserver> observers = null;
+    public static void addObserver(MblEventListener observer, String name) {
+        MblWeakArrayList<MblEventListener> observers = null;
 
         if(mObserverMap.containsKey(name)) {
             observers = mObserverMap.get(name);
         } else {
-            observers = new MblWeakArrayList<MblObserver>();
+            observers = new MblWeakArrayList<MblEventListener>();
             mObserverMap.put(name, observers);
         }
         if(observers.contains(observer)) return;
@@ -38,10 +28,10 @@ public class MblNotificationCenter {
         observers.add(observer);
     }
 
-    public static void removeObserver(MblObserver observer, String name) {
+    public static void removeObserver(MblEventListener observer, String name) {
         if(!mObserverMap.containsKey(name)) return;
 
-        MblWeakArrayList<MblObserver> observers = null;
+        MblWeakArrayList<MblEventListener> observers = null;
 
         observers = mObserverMap.get(name);
         if(!observers.contains(observer)) return;
@@ -53,7 +43,7 @@ public class MblNotificationCenter {
         }
     }
 
-    public static void removeAllObserver(MblObserver observer) {
+    public static void removeAllObserver(MblEventListener observer) {
         Set<String> keys = mObserverMap.keySet();
         for (String aKey : keys) {
             removeObserver(observer, aKey);
@@ -67,15 +57,15 @@ public class MblNotificationCenter {
     public static void postNotification(final Object sender, final boolean async, final String name, final Object... args) {
         if(!mObserverMap.containsKey(name)) return;
 
-        MblWeakArrayList<MblObserver> observers;
+        MblWeakArrayList<MblEventListener> observers;
         if (async) {
             observers = mObserverMap.get(name);
         } else {
-            observers = new MblWeakArrayList<MblObserver>(mObserverMap.get(name));
+            observers = new MblWeakArrayList<MblEventListener>(mObserverMap.get(name));
         }
-        observers.iterateWithCallback(new MlWeakArrayListCallback<MblObserver>() {
+        observers.iterateWithCallback(new MlWeakArrayListCallback<MblEventListener>() {
             @Override
-            public void onInterate(final MblObserver observer) {
+            public void onInterate(final MblEventListener observer) {
                 if (async) {
                     sMainThread.post(new Runnable() {
                         @Override
