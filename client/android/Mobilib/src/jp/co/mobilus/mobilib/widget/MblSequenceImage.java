@@ -2,6 +2,7 @@ package jp.co.mobilus.mobilib.widget;
 
 import android.content.Context;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
@@ -9,7 +10,7 @@ public class MblSequenceImage extends ImageView {
     private int mCurrentIndex;
     private int[] mImageResIds;
     private long mInterval;
-    private static Handler sHandler = new Handler();
+    private static Handler sHandler = new Handler(Looper.getMainLooper());
 
     private Runnable mOnTimerTask = new Runnable() {
         @Override

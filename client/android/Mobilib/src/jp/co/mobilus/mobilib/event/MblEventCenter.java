@@ -5,12 +5,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import jp.co.mobilus.mobilib.event.MblWeakArrayList.MlWeakArrayListCallback;
-import android.os.Handler;
-import android.os.Looper;
+import jp.co.mobilus.mobilib.util.MblUtils;
 
 public class MblEventCenter {
     private static final Map<String, MblWeakArrayList<MblEventListener>> mObserverMap = new ConcurrentHashMap<String, MblWeakArrayList<MblEventListener>>();
-    private static final Handler sMainThread = new Handler(Looper.getMainLooper());
 
     private MblEventCenter() {}
 
@@ -50,32 +48,20 @@ public class MblEventCenter {
         }
     }
 
-    public static void postNotification(Object sender, String name, final Object... args) {
-        postNotification(sender, true, name, args);
-    }
-
-    public static void postNotification(final Object sender, final boolean async, final String name, final Object... args) {
+    public static void postNotification(final Object sender, final String name, final Object... args) {
         if(!mObserverMap.containsKey(name)) return;
 
         MblWeakArrayList<MblEventListener> observers;
-        if (async) {
-            observers = mObserverMap.get(name);
-        } else {
-            observers = new MblWeakArrayList<MblEventListener>(mObserverMap.get(name));
-        }
+        observers = mObserverMap.get(name);
         observers.iterateWithCallback(new MlWeakArrayListCallback<MblEventListener>() {
             @Override
             public void onInterate(final MblEventListener observer) {
-                if (async) {
-                    sMainThread.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            observer.onEvent(sender, name, args);
-                        }
-                    });
-                } else {
-                    observer.onEvent(sender, name, args);
-                }
+                MblUtils.executeOnMainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        observer.onEvent(sender, name, args);
+                    }
+                });
             }
         });
     }

@@ -143,10 +143,17 @@ public class MblHorizontalViewPager extends HorizontalScrollView {
         smoothScrollTo(x, 0); // TODO: not smooth enough. use Scroller to make it smoother
     }
 
-    public void scrollToIndex(int index) {
+    public void scrollToIndex(final int index) {
         scrollTo(getXForIndex(index));
         if (index != mCurrentIndex) {
-            if (mCallback != null) mCallback.onIndexChanged(mCurrentIndex, index);
+            if (mCallback != null) {
+                MblUtils.executeOnMainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mCallback.onIndexChanged(mCurrentIndex, index);
+                    }
+                });
+            }
             mCurrentIndex = index;
         }
     }

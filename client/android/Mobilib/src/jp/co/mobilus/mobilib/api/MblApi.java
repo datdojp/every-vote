@@ -78,13 +78,26 @@ public abstract class MblApi {
                                     System.currentTimeMillis() - existingCache.getDate() <= getCacheDuration(fullUrl, isBinaryRequest)    );
                     if (shouldReadFromCache) {
                         try {
-                            byte[] data = MblUtils.readCacheFile(existingCache.getFileName());
+                            final byte[] data = MblUtils.readCacheFile(existingCache.getFileName());
                             if (data != null) {
                                 Vector<MlApiGetCallback> allCallbacksForFullUrl = mGetRequestCallbacks.get(fullUrl);
                                 synchronized (allCallbacksForFullUrl) {
-                                    for (MlApiGetCallback cb : allCallbacksForFullUrl) {
-                                        if (isBinaryRequest) cb.onSuccess(data);
-                                        else cb.onSuccess(new String(data));
+                                    for (final MlApiGetCallback cb : allCallbacksForFullUrl) {
+                                        if (isBinaryRequest) {
+                                            MblUtils.executeOnMainThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    cb.onSuccess(data);
+                                                }
+                                            });
+                                        } else {
+                                            MblUtils.executeOnMainThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    cb.onSuccess(new String(data));
+                                                }
+                                            });
+                                        }
                                     }
                                     allCallbacksForFullUrl.clear();
                                 }
@@ -105,14 +118,19 @@ public abstract class MblApi {
 
                     httpGet.setHeaders(getHeaderArray(headerParams));
 
-                    HttpResponse response = httpClient.execute(httpGet, httpContext);
+                    final HttpResponse response = httpClient.execute(httpGet, httpContext);
 
-                    int statusCode = response.getStatusLine().getStatusCode();
+                    final int statusCode = response.getStatusLine().getStatusCode();
                     if (statusCode < 200 || statusCode > 299) {
                         Vector<MlApiGetCallback> allCallbacksForFullUrl = mGetRequestCallbacks.get(fullUrl);
                         synchronized (allCallbacksForFullUrl) {
-                            for (MlApiGetCallback cb : allCallbacksForFullUrl) {
-                                cb.onFailure(statusCode, response.getStatusLine().getReasonPhrase());
+                            for (final MlApiGetCallback cb : allCallbacksForFullUrl) {
+                                MblUtils.executeOnMainThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        cb.onFailure(statusCode, response.getStatusLine().getReasonPhrase());
+                                    }
+                                });
                             }
                             allCallbacksForFullUrl.clear();
                         }
@@ -120,7 +138,7 @@ public abstract class MblApi {
                         return;
                     }
 
-                    byte[] data = EntityUtils.toByteArray(response.getEntity());
+                    final byte[] data = EntityUtils.toByteArray(response.getEntity());
 
                     if (isCacheEnabled) {
                         saveCache(existingCache, fullUrl, data);
@@ -128,9 +146,22 @@ public abstract class MblApi {
 
                     Vector<MlApiGetCallback> allCallbacksForFullUrl = mGetRequestCallbacks.get(fullUrl);
                     synchronized (allCallbacksForFullUrl) {
-                        for (MlApiGetCallback cb : allCallbacksForFullUrl) {
-                            if (isBinaryRequest) cb.onSuccess(data);
-                            else cb.onSuccess(new String(data));
+                        for (final MlApiGetCallback cb : allCallbacksForFullUrl) {
+                            if (isBinaryRequest) {
+                                MblUtils.executeOnMainThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        cb.onSuccess(data);
+                                    }
+                                });
+                            } else {
+                                MblUtils.executeOnMainThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        cb.onSuccess(new String(data));
+                                    }
+                                });
+                            }
                         }
                         allCallbacksForFullUrl.clear();
                     }
@@ -139,8 +170,13 @@ public abstract class MblApi {
 
                     Vector<MlApiGetCallback> allCallbacksForFullUrl = mGetRequestCallbacks.get(fullUrl);
                     synchronized (allCallbacksForFullUrl) {
-                        for (MlApiGetCallback cb : allCallbacksForFullUrl) {
-                            cb.onFailure(-1, "Unknown error");
+                        for (final MlApiGetCallback cb : allCallbacksForFullUrl) {
+                            MblUtils.executeOnMainThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    cb.onFailure(-1, "Unknown error");
+                                }
+                            });
                         }
                         allCallbacksForFullUrl.clear();
                     }
@@ -209,25 +245,44 @@ public abstract class MblApi {
 
                     httpPost.setHeaders(getHeaderArray(headerParams));
 
-                    HttpResponse response = httpClient.execute(httpPost, httpContext);
+                    final HttpResponse response = httpClient.execute(httpPost, httpContext);
 
-                    int statusCode = response.getStatusLine().getStatusCode();
+                    final int statusCode = response.getStatusLine().getStatusCode();
                     if (statusCode < 200 || statusCode > 299) {
                         if (callback != null) {
-                            callback.onFailure(
-                                    statusCode,
-                                    response.getStatusLine().getReasonPhrase());
+                            MblUtils.executeOnMainThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    callback.onFailure(
+                                            statusCode,
+                                            response.getStatusLine().getReasonPhrase());
+                                }
+                            });
                         }
                         return;
                     }
 
-                    String data = EntityUtils.toString(response.getEntity());
+                    final String data = EntityUtils.toString(response.getEntity());
 
-                    if (callback != null) callback.onSuccess(statusCode, data);
+                    if (callback != null) {
+                        MblUtils.executeOnMainThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onSuccess(statusCode, data);
+                            }
+                        });
+                    }
 
                 } catch (Exception e) {
                     Log.e(TAG, "Failed to download file", e);
-                    if (callback != null) callback.onFailure(-1, "Unknown error");
+                    if (callback != null) {
+                        MblUtils.executeOnMainThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onFailure(-1, "Unknown error");
+                            }
+                        });
+                    }
                 }
             }
         });
