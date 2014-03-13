@@ -113,41 +113,83 @@ public class MblUtils extends MblInternal {
     }
 
     public static Bitmap loadBitmapMatchSpecifiedSize(final int targetW, final int targetH, final byte[] bmData) {
-        int scaleFactor = 1;
+        return new LoadBitmapMatchSpecifiedSizeTemplate<byte[]>() {
 
-        // get image view sizes
-        int photoW = 0;
-        int photoH = 0;
-        if (targetW > 0 || targetH > 0) {
-            // get bitmap sizes
-            int[] photoSizes = getBitmapSizes(bmData);
-            photoW = photoSizes[0];
-            photoH = photoSizes[1];
+            @Override
+            public int[] getBitmapSizes(byte[] bmData) {
+                return MblUtils.getBitmapSizes(bmData);
+            }
 
-            // figure out which way needs to be reduced less
-            if (photoW > 0 && photoH > 0) {
-                if (targetW > 0 && targetH > 0) {
-                    if ((targetW > targetH && photoW < photoH) || (targetW < targetH && photoW > photoH)) {
-                        scaleFactor = Math.max(photoW / targetW, photoH / targetH);
-                    } else {
-                        scaleFactor = Math.min(photoW / targetW, photoH / targetH);
-                    }
-                } else if (targetW > 0) {
-                    scaleFactor = photoW / targetW;
-                } else if (targetH > 0) {
-                    scaleFactor = photoH / targetH;
+            @Override
+            public Bitmap decodeBitmap(byte[] bmData, BitmapFactory.Options options) {
+                return BitmapFactory.decodeByteArray(bmData, 0, bmData.length, options);
+            }
+
+        }.load(targetW, targetH, bmData);
+    }
+
+    public static Bitmap loadBitmapMatchSpecifiedSize(final int targetW, final int targetH, final String path) {
+        return new LoadBitmapMatchSpecifiedSizeTemplate<String>() {
+
+            @Override
+            public int[] getBitmapSizes(String path) {
+                try {
+                    return MblUtils.getBitmapSizes(path);
+                } catch (IOException e) {
+                    return new int[] {0, 0};
                 }
             }
+
+            @Override
+            public Bitmap decodeBitmap(String path, BitmapFactory.Options options) {
+                return BitmapFactory.decodeFile(path, options);
+            }
+
+        }.load(targetW, targetH, path);
+    }
+
+    private static abstract class LoadBitmapMatchSpecifiedSizeTemplate<T> {
+        
+        public abstract int[] getBitmapSizes(T input);
+        public abstract Bitmap decodeBitmap(T input, BitmapFactory.Options options);
+        
+        public Bitmap load(final int targetW, final int targetH, T input) {
+            int scaleFactor = 1;
+
+            // get image view sizes
+            int photoW = 0;
+            int photoH = 0;
+            if (targetW > 0 || targetH > 0) {
+                // get bitmap sizes
+                int[] photoSizes = getBitmapSizes(input);
+                photoW = photoSizes[0];
+                photoH = photoSizes[1];
+
+                // figure out which way needs to be reduced less
+                if (photoW > 0 && photoH > 0) {
+                    if (targetW > 0 && targetH > 0) {
+                        if ((targetW > targetH && photoW < photoH) || (targetW < targetH && photoW > photoH)) {
+                            scaleFactor = Math.max(photoW / targetW, photoH / targetH);
+                        } else {
+                            scaleFactor = Math.min(photoW / targetW, photoH / targetH);
+                        }
+                    } else if (targetW > 0) {
+                        scaleFactor = photoW / targetW;
+                    } else if (targetH > 0) {
+                        scaleFactor = photoH / targetH;
+                    }
+                }
+            }
+
+            // set bitmap options to scale the image decode target
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            bmOptions.inSampleSize = scaleFactor;
+            bmOptions.inPurgeable = true;
+
+            // decode the bitmap
+            Bitmap bm = decodeBitmap(input, bmOptions);
+            return bm;
         }
-
-        // set bitmap options to scale the image decode target
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inSampleSize = scaleFactor;
-        bmOptions.inPurgeable = true;
-
-        // decode the bitmap
-        Bitmap bm = BitmapFactory.decodeByteArray(bmData, 0, bmData.length, bmOptions);
-        return bm;
     }
 
     public static int[] getBitmapSizes(byte[] bmData) {
