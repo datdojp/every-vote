@@ -198,7 +198,7 @@ public abstract class MblImageLoader<T> {
         if (item == null || imageView == null) return;
         if (!shouldLoadImage(item)) {
             onPictureUnavailable(view, imageView, item);
-            imageView.setImageResource(getDefaultImageResource(item));
+            setImageViewResource(imageView, getDefaultImageResource(item));
             return;
         }
         final Object pic = get(getFullCacheKey(item));
@@ -216,7 +216,7 @@ public abstract class MblImageLoader<T> {
                 }
             } else if (pic instanceof Integer) {
                 onPictureAvailable(view, imageView, item, pic);
-                imageView.setImageResource((Integer) pic);
+                setImageViewResource(imageView, (Integer) pic);
             }
         } else {
             onPictureUnavailable(view, imageView, item);
@@ -228,7 +228,7 @@ public abstract class MblImageLoader<T> {
     protected void onPictureUnavailable(View view, ImageView imageView, T item) {}
 
     private void handleBitmapUnavailable(ImageView imageView, T item) {
-        imageView.setImageResource(getDefaultImageResource(item));
+        setImageViewResource(imageView, getDefaultImageResource(item));
         mQueue.push(item);
         loadNextImage();
     }
@@ -396,6 +396,14 @@ public abstract class MblImageLoader<T> {
                 loadNextImage();
             }
         });
+    }
+    
+    private void setImageViewResource(ImageView imageView, int resId) {
+        if (resId <= 0) {
+            imageView.setImageBitmap(null);
+        } else {
+            imageView.setImageResource(resId);
+        }
     }
 
     private String getFullCacheKey(T item) {
