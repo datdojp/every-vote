@@ -754,7 +754,6 @@ public class MblUtils extends MblInternal {
     }
 
     public static void loadInternalImage(
-            final Context context,
             final String path,
             final ImageView target) {
 
