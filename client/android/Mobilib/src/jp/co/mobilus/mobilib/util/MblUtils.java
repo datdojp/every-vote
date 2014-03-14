@@ -792,4 +792,14 @@ public class MblUtils extends MblInternal {
         }
         return bm;
     }
+
+    public static void copyAssetFileToExternalMemory(String src, String dst) throws IOException {
+        InputStream in = null;
+        OutputStream out = null;
+        AssetManager assets = getCurrentContext().getAssets();
+        in = assets.open(src);
+        out = new FileOutputStream(dst);
+
+        copyFile(in, out);
+    }
 }
