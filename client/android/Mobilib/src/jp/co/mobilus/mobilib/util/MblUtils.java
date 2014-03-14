@@ -149,10 +149,10 @@ public class MblUtils extends MblInternal {
     }
 
     private static abstract class LoadBitmapMatchSpecifiedSizeTemplate<T> {
-        
+
         public abstract int[] getBitmapSizes(T input);
         public abstract Bitmap decodeBitmap(T input, BitmapFactory.Options options);
-        
+
         public Bitmap load(final int targetW, final int targetH, T input) {
             int scaleFactor = 1;
 
@@ -751,5 +751,46 @@ public class MblUtils extends MblInternal {
 
         // combine & hast
         return md5(builder.toString());
+    }
+
+    public static void loadInternalImage(
+            final Context context,
+            final String path,
+            final ImageView target) {
+
+        if (TextUtils.isEmpty(path)) return;
+
+        executeOnAsyncThread(new Runnable() {
+            @Override
+            public void run() {
+                final Bitmap bm = loadInternalImage(path);
+                executeOnMainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        target.setImageBitmap(bm);
+                    }
+                });
+            }
+        });
+    }
+
+    public static Bitmap loadInternalImage(String path) {
+        if (TextUtils.isEmpty(path)) return null;
+
+        FileInputStream is = null;
+        Bitmap bm = null;
+        try {
+            is = getCurrentContext().openFileInput(path);
+            bm = BitmapFactory.decodeStream(is);
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, "Can not load image from internal storage: path=" + path, e);
+        } finally {
+            try {
+                if (is != null) is.close();
+            } catch (IOException e) {
+                // ignored
+            }
+        }
+        return bm;
     }
 }
