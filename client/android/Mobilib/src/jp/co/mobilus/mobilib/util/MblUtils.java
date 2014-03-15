@@ -67,6 +67,12 @@ public class MblUtils extends MblInternal {
     private static float density = 0;
     private static final String EMAIL_TYPE = "message/rfc822";
 
+    public static void showKeyboard(View focusedView) {
+        focusedView.requestFocus();
+        InputMethodManager inputMethodManager = ((InputMethodManager)getCurrentContext().getSystemService(Context.INPUT_METHOD_SERVICE));
+        inputMethodManager.showSoftInput(focusedView, InputMethodManager.SHOW_FORCED);
+    }
+    
     public static void hideKeyboard() {
         Activity activity = (Activity) getCurrentContext();
         View currentFocusedView = activity.getCurrentFocus();
