@@ -112,7 +112,7 @@ public abstract class MblBaseActivity extends FragmentActivity {
             params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         }
         layout.setLayoutParams(params);
-        MblDecorView decorView = new MblDecorView(MblUtils.getCurrentContext());
+        MblDecorView decorView = new MblDecorView(this);
         decorView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         decorView.addView(layout);
         mContentView = layout;
