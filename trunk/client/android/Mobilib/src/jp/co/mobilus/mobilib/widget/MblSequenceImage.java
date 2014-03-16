@@ -10,12 +10,25 @@ public class MblSequenceImage extends ImageView {
     private int mCurrentIndex;
     private int[] mImageResIds;
     private long mInterval;
+    private boolean mRepeat;
+    private MblSequenceImageCallback mCallback;
     private static Handler sHandler = new Handler(Looper.getMainLooper());
 
     private Runnable mOnTimerTask = new Runnable() {
         @Override
         public void run() {
             setImageResource(mImageResIds[mCurrentIndex]);
+            if (mCallback != null) mCallback.onShow(mCurrentIndex);
+            
+            if (mCurrentIndex == mImageResIds.length-1) {
+                if (mRepeat) {
+                    if (mCallback != null) mCallback.onReset();
+                } else {
+                    if (mCallback != null) mCallback.onFinish();
+                    stop();
+                    return;
+                }
+            }
             mCurrentIndex = (mCurrentIndex+1) % mImageResIds.length;
 
             sHandler.removeCallbacks(mOnTimerTask);
@@ -35,10 +48,12 @@ public class MblSequenceImage extends ImageView {
         super(context, attrs, defStyle);
     }
 
-    public void init(int[] imageResIds, long interval) {
+    public void init(int[] imageResIds, long interval, boolean repeat, MblSequenceImageCallback callback) {
         mImageResIds = imageResIds;
         mInterval = interval;
         mCurrentIndex = 0;
+        mRepeat = repeat;
+        mCallback = callback;
     }
 
     public void start() {
@@ -54,5 +69,11 @@ public class MblSequenceImage extends ImageView {
     
     public void stop() {
         sHandler.removeCallbacks(mOnTimerTask);
+    }
+    
+    public static interface MblSequenceImageCallback {
+        public void onFinish();
+        public void onReset();
+        public void onShow(int index);
     }
 }
