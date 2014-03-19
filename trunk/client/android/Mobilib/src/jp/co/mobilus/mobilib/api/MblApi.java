@@ -198,7 +198,7 @@ public abstract class MblApi {
 
     public void post(
             final String url,
-            final Map<String, Object> params,
+            final Map<String, ? extends Object> params,
             final Map<String, String> headerParams,
             final boolean isIgnoreSSLCertificate,
             final MlApiPostCallback callback ) throws MblApiInvalidParam {
