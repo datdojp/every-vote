@@ -2,6 +2,7 @@ package jp.co.mobilus.mobilib.api;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,10 @@ public abstract class MblApi {
 
     private static final String TAG = MblApi.class.getSimpleName();
 
+    private static final String UTF8 = "UTF-8";
+    private static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
+    
+    
     private final Map<String, Vector<MlApiGetCallback>> mGetRequestCallbacks = new ConcurrentHashMap<String, Vector<MlApiGetCallback>>();
 
     public void get(
@@ -230,7 +235,7 @@ public abstract class MblApi {
                                 if (val instanceof InputStream) {
                                     multipartContent.addPart(key, new InputStreamBody((InputStream)val, key));
                                 } else if (val instanceof String){
-                                    multipartContent.addPart(key, new StringBody((String)val));
+                                    multipartContent.addPart(key, new StringBody((String)val, CHARSET_UTF8));
                                 }
                             }
                             httpPost.setEntity(multipartContent);
@@ -239,7 +244,7 @@ public abstract class MblApi {
                             for (String key : params.keySet()) {
                                 nameValuePairs.add(new BasicNameValuePair(key, (String)params.get(key)));
                             }
-                            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+                            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs, UTF8));
                         }
                     }
 
