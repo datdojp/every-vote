@@ -420,6 +420,15 @@ public class MblUtils extends MblInternal {
 
         return b;
     }
+    
+    public static byte[] readInternalFile(String filePath) throws IOException {
+        FileInputStream in = getCurrentContext().openFileInput(filePath);
+        byte[] b = new byte[in.available()];
+        in.read(b);
+        in.close();
+
+        return b;
+    }
 
     public static void showAlert(final int titleResId, final int messageResId, final Runnable postTask) {
         executeOnMainThread(new Runnable() { 
