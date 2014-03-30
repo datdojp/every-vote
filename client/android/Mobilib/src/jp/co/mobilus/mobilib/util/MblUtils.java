@@ -817,4 +817,9 @@ public class MblUtils extends MblInternal {
 
         copyFile(in, out);
     }
+
+    // ref: http://stackoverflow.com/questions/3105673/android-how-to-kill-an-application-with-all-its-activities
+    public static void closeApp() {
+        android.os.Process.killProcess(android.os.Process.myPid());
+    }
 }
