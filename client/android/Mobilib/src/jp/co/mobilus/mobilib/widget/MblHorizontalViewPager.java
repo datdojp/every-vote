@@ -254,4 +254,32 @@ public class MblHorizontalViewPager extends HorizontalScrollView {
     private int getXForIndex(int index) {
         return index * (getPageWidth() + mDividerWidth);
     }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        MblUtils.getMainThreadHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                for(int i = 0; i < mContainerLayout.getChildCount(); i++) {
+                    View child = mContainerLayout.getChildAt(i);
+                    if (child instanceof FrameLayout) {
+                        ViewGroup.LayoutParams lp = child.getLayoutParams();
+                        lp.width = getPageWidth();
+                        child.setLayoutParams(lp);
+                    }
+                }
+
+                requestLayout();
+
+                MblUtils.getMainThreadHandler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        scrollToIndex(mCurrentIndex);
+                    }
+                });
+            }
+        });
+    }
+
 }
