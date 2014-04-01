@@ -52,7 +52,7 @@ public class MblDecorView extends FrameLayout {
         int maxDiff = Math.max(Math.abs(mMaxDisplaySize - maxVisibleSize), Math.abs(mMinDisplaySize - minVisibleSize));
         int kbStt = maxDiff >= MblUtils.getMinKeyboardHeight() ? KB_SHOWN : KB_HIDDEN;
         if (sKeyboardStatus != kbStt) {
-            MblEventCenter.postNotification(false, MblCommonEvents.KEYBOARD_SHOW_OR_HIDE, kbStt == KB_SHOWN);
+            MblEventCenter.postNotification(this, MblCommonEvents.KEYBOARD_SHOW_OR_HIDE, kbStt == KB_SHOWN);
             sKeyboardStatus = kbStt;
         }
     }
