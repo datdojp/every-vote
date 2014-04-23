@@ -30,6 +30,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.AssetManager;
@@ -821,5 +822,16 @@ public class MblUtils extends MblInternal {
     // ref: http://stackoverflow.com/questions/3105673/android-how-to-kill-an-application-with-all-its-activities
     public static void closeApp() {
         android.os.Process.killProcess(android.os.Process.myPid());
+    }
+
+    public static PackageInfo getAppPackageInfo() {
+        try {
+            Context context = MblUtils.getCurrentContext();
+            String packageName = context.getPackageName();
+            return context.getPackageManager().getPackageInfo(packageName, 0);
+        } catch (NameNotFoundException e) {
+            Log.i(TAG, "Could not get app name and version", e);
+        }
+        return null;
     }
 }
