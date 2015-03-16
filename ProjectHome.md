@@ -1,0 +1,1 @@
+mobile app to get votes from friends for certain decision
